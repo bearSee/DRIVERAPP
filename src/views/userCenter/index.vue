@@ -15,7 +15,7 @@
             </span>
           </div>
           <div class="invitation-code">
-            我的邀请码：{{ userInfo.invitationCode }}
+            我的邀请码：{{ userInfo.invitationCode || 'xxxxxx' }}
           </div>
         </div>
       </div>
@@ -38,14 +38,12 @@
       </div>
       <div class="sign-box">
         <div class="box-title">
-          连续签到获得更多积分 <van-icon name="question-o" />
+          <span>连续签到获得更多积分</span>
+          <img
+            class="question-icon"
+            src="@/assets/image/question.png"
+            @click="handlerQuestion('sign')">
         </div>
-        <!-- <div class="signDays">
-          已连续签到 {{ userInfo.signDays || 0 }} 天
-        </div>
-        <div class="pointNum">
-          今日共获得 {{ userInfo.pointNum }} 积分
-        </div> -->
         <div class="total-point-box">
           <div class="point-detail">
             <div class="point-num">
@@ -61,51 +59,44 @@
           </div>
           <van-button
             type="primary"
-            :disabled="userInfo.hasSign">
+            :disabled="userInfo.hasSign"
+            @click="handlerSign">
             签到领积分
           </van-button>
         </div>
       </div>
       <div class="share-box">
-        <div class="title">
-          邀请新司机，积分轻松得! <van-icon name="question-o" />
-        </div>
-        <div class="share-code">
-          我的邀请码： {{ userInfo.shareCode || 'xxxxxx' }}
-        </div>
-        <div class="member-box">
-          <div class="members">
-            <img
-              class="member-avatar"
-              v-for="(member, index) in userInfo.members"
-              :key="index"
-              src="@/assets/image/avatar.jpg">
-          </div>
-          <van-button
-            size="mini"
-            plain
-            round
-            @click="handlerClick('share')">
-            邀请好友
-          </van-button>
+        <div
+          class="share-code"
+          @click="handlerClick('share')">
+          <span>我的邀请码：{{ userInfo.invitationCode || 'xxxxxx' }}</span>
+          <img
+            class="question-icon"
+            src="@/assets/image/question.png"
+            @click.stop="handlerQuestion('share')">
         </div>
       </div>
       <div class="active-box">
         <div class="box-title">
-          我的活动
+          <span>我的活动</span>
+          <img
+            class="question-icon"
+            src="@/assets/image/question.png"
+            @click="handlerQuestion('active')">
         </div>
         <div class="activities">
           <div
             class="active"
-            v-for="active in activities"
-            :key="active.code">
-            <van-icon
-              class="ac-icon"
-              :name="active.icon" />
+            v-for="(active, index) in activities"
+            :key="index">
+            <img
+              class="ac-image"
+              :src="require(`@/assets/image/${active.image}`)">
             <div class="ac-content">
               <div class="ac-title">
-                <span>{{ active.name }}</span>
-                <van-icon name="points" />
+                <span class="ac-name">{{ active.name }}</span>
+                <span class="point-num">+{{ active.pointNum }}</span>
+                <span class="point-mark" />
               </div>
               <div class="ac-describe">
                 {{ active.describe }}
@@ -137,7 +128,7 @@ export default {
             userInfo: {
                 userName: '司机10000号',
                 invitationCode: '668888',
-                integral: '123456789999',
+                integral: window.formatMoney('123456789999', 0),
                 signDays: 6,
                 pointNum: 54,
                 hsaSign: true,
@@ -187,6 +178,8 @@ export default {
                     code: 'skip',
                     describe: '随意分享活动，一键get积分奖励',
                     icon: 'share-o',
+                    image: 'share.png',
+                    pointNum: 100,
                     status: 2,
                 },
                 {
@@ -195,6 +188,8 @@ export default {
                     code: 'skip',
                     describe: '点赞任意活动，即可收获积分！',
                     icon: 'good-job-o',
+                    image: 'thumbs-up.png',
+                    pointNum: 80,
                     status: 2,
                 },
                 {
@@ -203,6 +198,8 @@ export default {
                     code: 'comment',
                     describe: '升级为精华评论，任务奖励收入囊中！',
                     icon: 'comment-o',
+                    image: 'comment.png',
+                    pointNum: 80,
                     status: 2,
                 },
                 {
@@ -211,6 +208,8 @@ export default {
                     code: 'sign',
                     describe: '今日签到成功，即可获得当日积分！',
                     icon: 'sign',
+                    image: 'sign.png',
+                    pointNum: 50,
                     status: 1,
                 },
                 {
@@ -219,6 +218,8 @@ export default {
                     code: 'login',
                     describe: '首次登陆成功，轻松获得积分！',
                     icon: 'certificate',
+                    image: 'login.png',
+                    pointNum: 30,
                     status: 1,
                 },
                 {
@@ -227,14 +228,24 @@ export default {
                     code: 'exchange',
                     describe: '首次参与兑换，还能获得积分！',
                     icon: 'exchange',
+                    image: 'exchange.png',
+                    pointNum: 50,
                     status: 1,
                 },
             ],
         };
     },
     methods: {
+        handlerSign() {},
         handlerClick(code) {
-            console.log('code', code);
+            // eslint-disable-next-line no-alert
+            alert('handlerClick-code');
+            console.log('handlerClick-code', code);
+        },
+        handlerQuestion(code) {
+            // eslint-disable-next-line no-alert
+            alert('handlerQuestion');
+            console.log('handlerQuestion-code', code);
         },
     },
 };
@@ -248,7 +259,7 @@ export default {
   font-family: PingFangSC-Regular, PingFang SC;
   font-weight: 400;
   padding: 0 .12rem;
-  padding-top: .33rem;
+  padding-top: .28rem;
   background-image: url(../../assets/image/center-bg.png);
   background-repeat: no-repeat;
   background-size: 100% 1.5rem;
@@ -313,10 +324,15 @@ export default {
       font-weight: 500;
       color: #333333;
       line-height: .21rem;
-      .van-icon {
+      display: flex;
+      span {
+        margin: auto 0;
+      }
+      .question-icon {
         color: $theme;
-        font-size: .15rem;
-        font-weight: 600;
+        margin: auto .05rem;
+        position: relative;
+        top: -.01rem;
       }
     }
     .enters {
@@ -354,6 +370,7 @@ export default {
     }
     .sign-box {
       padding: .14rem;
+      margin: .12rem 0;
       border-radius: .06rem;
       box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.02);
       background: #fff;
@@ -399,80 +416,90 @@ export default {
       }
     }
     .share-box {
-      padding: .13rem .1rem;
-      margin: .1rem;
       border-radius: .05rem;
-      background: #fff;
+      margin: .12rem 0;
+      height: .86rem;
+      border-radius: .06rem;
+      box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.02);
+      background-image: url(../../assets/image/invitation-bg.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+      position: relative;
       .share-code {
-        color: #333;
+        height: .23rem;
+        line-height: .17rem;
+        background: #FFFFFF;
+        padding: .03rem .1rem;
+        border-radius: .13rem;
+        position: absolute;
+        top: .45rem;
+        left: .16rem;
+        z-index: 2;
         font-size: .12rem;
-        margin: .13rem 0 .12rem .05rem;
-      }
-      .member-box {
+        font-weight: 500;
+        color: #000000;
         display: flex;
-        justify-content: space-between;
-        padding-left: .05rem;
-        .members {
-          max-width: calc(100% - 1rem);
-          display: flex;
-          flex-wrap: wrap;
-          .member-avatar {
-            width: .2rem;
-            height: .2rem;
-            border-radius: 50%;
-            margin: auto 0;
-            margin-right: .05rem;
-          }
-        }
-        .van-button {
-          border-color: $theme;
-          color: $theme;
-          width: .6rem;
+        .question-icon {
+          margin: auto .05rem;
+          margin-right: 0;
+          position: relative;
+          top: -.01rem;
+          right: -.02rem;
         }
       }
     }
-  }
-  .active-box {
-    padding: .13rem .1rem;
-    margin: .1rem;
-    border-radius: .05rem;
-    background: #fff;
-    .activities {
-      margin-top: .1rem;
-      .active {
-        display: flex;
-        padding: .12rem 0;
-        border-bottom: .01rem solid #ebedf0;
-        &:last-child {
-          border-bottom: 0;
-        }
-        .ac-icon {
-          font-size: .3rem;
-          color: $theme;
-          margin: auto 0;
-        }
-        .ac-content {
-          width: calc(100% - .9rem);
-          padding: 0 .1rem;
-          padding-right: .05rem;
-          font-size: .12rem;
-          color: #333;
-          .ac-title {
-            .van-icon {
-              color: $theme;
-              margin-left: .05rem;
+    .active-box {
+      padding: .14rem;
+      border-radius: .06rem;
+      background: #fff;
+      box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.02);
+      .activities {
+        margin-top: .09rem;
+        .active {
+          display: flex;
+          padding: .11rem 0;
+          box-shadow: inset 0px -1px 0px 0px rgba(238, 238, 238, 0.5);
+          &:last-child {
+            border-bottom: 0;
+          }
+          .ac-image {
+            width: .52rem;
+            height: .52rem;
+            color: $theme;
+            margin: auto 0;
+          }
+          .ac-content {
+            width: calc(100% - .9rem);
+            padding: 0 .09rem;
+            padding-right: .05rem;
+            font-size: .16rem;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            .ac-title {
+              .point-num {
+                margin: 0 .04rem;
+                font-size: .12rem;
+                font-weight: 500;
+                color: #F66A4A;
+                position: relative;
+                top: -.02rem;
+              }
+            }
+            .ac-describe {
+              line-height: 1.2;
+              font-size: .12rem;
+              font-weight: 400;
+              color: #666666;;
             }
           }
-          .ac-describe {
-            margin-top: .1rem;
-            line-height: 1.2;
+          .ac-btn {
+            width: .6rem;
+            margin: auto 0;
+            border-color: $theme;
+            color: $theme;
           }
-        }
-        .ac-btn {
-          width: .6rem;
-          margin: auto 0;
-          border-color: $theme;
-          color: $theme;
         }
       }
     }

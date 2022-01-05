@@ -2,8 +2,8 @@
  * @Author: 熊望
  * @Date: 2021-12-28 20:10:42
  * @LastEditors: 熊望
- * @LastEditTime: 2021-12-30 23:51:57
- * @FilePath: /nginx/Users/bear/Desktop/DRIVERAPP/src/App.vue
+ * @LastEditTime: 2022-01-05 23:31:24
+ * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/App.vue
  * @Description:
 -->
 <template>
@@ -21,9 +21,19 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 
 export default {
     name: 'App',
+    methods: {
+        ...mapMutations(['replaceUserInfo']),
+    },
+    mounted() {
+        this.replaceUserInfo({
+            username: '司机007',
+            id: '2',
+        });
+    },
 };
 </script>
 <style lang="scss">

@@ -1,12 +1,22 @@
+/*
+ * @Author: 熊望
+ * @Date: 2022-01-05 21:38:50
+ * @LastEditors: 熊望
+ * @LastEditTime: 2022-01-05 22:37:53
+ * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/utils/prototype.js
+ * @Description:
+ */
 import deepCopy from './deepCopy';
 import { getCertainDate } from './certainDate';
 import download from './download';
 import formatDate from './formatDate';
+import formatMoney from './formatMoney';
 import uuid from './uuid';
 import rules from './rules';
 
 /* eslint-disable */
 window.formatDate = formatDate;
+window.formatMoney = formatMoney;
 window.download = download;
 window.getuuid = uuid;
 window.getCertainDate = getCertainDate;

@@ -2,8 +2,8 @@
  * @Author: 熊望
  * @Date: 2021-12-27 20:50:16
  * @LastEditors: 熊望
- * @LastEditTime: 2021-12-31 00:30:05
- * @FilePath: /nginx/Users/bear/Desktop/DRIVERAPP/src/router/route-config.js
+ * @LastEditTime: 2022-01-05 22:54:06
+ * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/router/route-config.js
  * @Description:
  */
 
@@ -46,7 +46,7 @@ export default {
         },
         {
             path: '/my-point',
-            name: '积分明细',
+            name: '收支明细',
             meta: {
                 keepAlive: false,
             },
