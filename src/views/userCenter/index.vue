@@ -11,7 +11,7 @@
             <span>{{ userInfo.userName || '' }}</span>
             <span class="integral">
               <span class="point-mark" />
-              <span class="num">{{ userInfo.integral || 0 }}</span>
+              <span class="num">{{ (userInfo.score || 0) | formatMoney(0) }}</span>
             </span>
           </div>
           <div class="invitation-code">
@@ -47,7 +47,7 @@
         <div class="total-point-box">
           <div class="point-detail">
             <div class="point-num">
-              {{ userInfo.pointNum }}
+              {{ userInfo.pointNum || 0 }}
             </div>
             <div class="point-des">
               <span>今日共获得</span>
@@ -120,34 +120,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 
 export default {
     name: 'UserCenterIndex',
     data() {
         return {
-            userInfo: {
-                userName: '司机10000号',
-                invitationCode: '668888',
-                integral: window.formatMoney('123456789999', 0),
-                signDays: 6,
-                pointNum: 54,
-                hsaSign: true,
-                shareCode: 'GJUTEFCGHFD',
-                members: [
-                    {
-                        image: '',
-                        name: '',
-                    },
-                    {
-                        image: '',
-                        name: '',
-                    },
-                    {
-                        image: '',
-                        name: '',
-                    },
-                ],
-            },
             enters: [
                 {
                     title: '我的积分',
@@ -235,6 +213,9 @@ export default {
             ],
         };
     },
+    computed: {
+        ...mapState(['userInfo']),
+    },
     methods: {
         handlerSign() {},
         handlerClick(code) {
@@ -248,6 +229,9 @@ export default {
             console.log('handlerQuestion-code', code);
         },
     },
+    filters: {
+        formatMoney: window.formatMoney,
+    },
 };
 </script>
 
@@ -260,9 +244,9 @@ export default {
   font-weight: 400;
   padding: 0 .12rem;
   padding-top: .28rem;
-  background-image: url(../../assets/image/center-bg.png);
-  background-repeat: no-repeat;
-  background-size: 100% 1.5rem;
+  background-image: url(../../assets/image/center-bg.png) !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 1.5rem !important;
   overflow-y: auto;
   .center-head {
     color: #fff;
@@ -291,6 +275,7 @@ export default {
             font-weight: 500;
             color: #FFE367;
             padding: .04rem .08rem;
+            padding-right: .12rem;
             display: flex;
             position: relative;
             top: -.07rem;

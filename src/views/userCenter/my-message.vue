@@ -15,28 +15,34 @@
       @refresh="handlerRefresh">
       <van-list
         v-model="loading"
+        loading-text=" "
+        :finished-text="tipText"
         :finished="finished"
-        finished-text="没有更多了"
-        @load="getOrderData">
-        <div
-          class="content-item"
-          v-for="message in orderData"
-          :key="message.id">
-          <div class="content-box">
-            <div class="title-box">
-              <h3>{{ message.title }}</h3>
-              <div class="text cut_font_3">
-                {{ message.content }}
+        @load="getMessageData">
+        <div class="list-container">
+          <div
+            class="content-item"
+            :class="i + 1 === messageData.length && 'no-shadow'"
+            v-for="(message, i) in messageData"
+            :key="message.id">
+            <div class="content-box">
+              <div class="title-box">
+                <h3 class="cut_font_2">
+                  {{ message.title }}
+                </h3>
+                <div class="text cut_font_2">
+                  {{ message.content }}
+                </div>
               </div>
             </div>
-            <div
-              class="status"
-              :class="'status_' + message.status">
-              {{ message.statusName }}
+            <div class="date-box">
+              <span>{{ message.time }}</span>
+              <div
+                class="status"
+                :class="'status_' + message.status">
+                {{ message.statusName }}
+              </div>
             </div>
-          </div>
-          <div class="date-box">
-            {{ message.time }}
           </div>
         </div>
       </van-list>
@@ -53,50 +59,45 @@ export default {
             loading: false,
             finished: false,
             refreshing: false,
-            orderData: [],
-            pageSize: 20,
-            pageIndex: 1,
-            totalPoints: 98,
+            messageData: [],
+            limit: 20,
+            page: 1,
+            tipText: '',
         };
     },
     methods: {
-        getOrderData() {
-            setTimeout(() => {
-                const data = Array(this.pageSize).fill().map((_, i) => ({
+        getMessageData() {
+            this.$http.post('/message/findMsgByUser').then((res) => {
+                const data = Array(3).fill().map((_, i) => ({
                     status: i % 2,
                     statusName: i % 2 ? '新消息' : '已读',
                     time: '2021-12-12 00:30:56',
                     title: '第三次XXX公益活动开始报名啦！',
                     content: '开始报名啦！开始报名啦！开始报名啦！开始报名啦！开始报名啦！开始报名啦！开始报名啦！开始报名啦！开始报名啦！',
-                    id: this.pageSize * (this.pageIndex - 1) + i + 1,
+                    id: i,
                 }));
-                const total = 100;
-
-                this.orderData.splice(this.orderData.length, 0, ...data);
-                this.pageIndex += 1;
+                const { totalCount = 0, list = [] } = (res.data || {}).page || {};
+                this.messageData.splice(this.messageData.length, 0, ...list);
+                this.messageData.splice(this.messageData.length, 0, ...data);
+                this.page += 1;
+                if (this.messageData.length >= totalCount) {
+                    this.tipText = '已经到底了喔';
+                    this.finished = true;
+                }
+            }).finally(() => {
                 this.loading = false;
                 this.refreshing = false;
-
-                if (this.orderData.length >= total) this.finished = true;
-            }, 1000);
+                if (!this.messageData.length) this.tipText = '暂无消息';
+            });
         },
         handlerRefresh() {
             this.finished = false;
             this.loading = true;
-            this.list = [];
-            this.pageSize = 20;
-            this.pageIndex = 1;
-            this.getOrderData();
+            this.messageData = [];
+            this.limit = 20;
+            this.page = 1;
+            this.getMessageData();
         },
-        handlerCancel(message) {
-            console.log('message', message);
-        },
-        handlerConfirm(message) {
-            console.log('message', message);
-        },
-    },
-    created() {
-        this.getOrderData();
     },
 };
 </script>
@@ -105,40 +106,42 @@ export default {
 @import "@/assets/scss/theme.scss";
 
 .my-message {
-    background: #f1eeee;
-    padding: .1rem;
-    .total-box {
-      .van-icon {
-        color: $theme;
-        opacity: .8;
-      }
-    }
     .van-list {
+      border-top: 0;
+      .list-container {
+        background: transparent;
         .content-item {
-            padding: .12rem .05rem;
+            box-shadow: unset;
+            margin-bottom: .12rem;
             background: #fff;
-            margin: .1rem 0;
-            border-radius: .05rem;
-            font-size: .12rem;
+            box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.02);
+            border-radius: 6px;
+            padding: .2rem .16rem 0 .16rem;
+            display: block;
             .content-box {
-              display: flex;
               border-bottom: .01rem solid #ebedf0;
-              padding: 0 .05rem;
-              padding-bottom: .1rem;
               .title-box {
-                width: calc(100% - .6rem);
-                font-size: .14rem;
+                font-size: .16rem;
+                line-height: .22rem;
+                font-weight: 500;
+                color: #000000;
                 .text {
                   font-size: .12rem;
                   color: #999;
-                  margin-top: .1rem;
+                  margin: .1rem 0 .14rem 0;
+                  line-height: 1.2;
                 }
               }
+            }
+            .date-box {
+              padding: .15rem 0;
+              color: #999999;
+              font-size: .12rem;
+              display: flex;
+              justify-content: space-between;
               .status {
-                width: .6rem;
-                font-size: .14rem;
-                text-align: right;
-                // margin: auto 0;
+                font-size: .13rem;
+                margin: auto 0;
                 &_0 {
                   color: #999;
                 }
@@ -147,11 +150,8 @@ export default {
                 }
               }
             }
-            .date-box {
-              padding: 0 .05rem;
-              margin-top: .1rem;
-            }
         }
+      }
     }
 }
 </style>

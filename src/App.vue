@@ -80,10 +80,64 @@ a {
   height: 100vh;
   font-size: 0.14rem;
   color: #333;
-  .app-container {
-    width: 100%;
-    height: calc(100% - 46px);
-    overflow-y: auto;
+}
+.van-nav-bar__placeholder {
+  height: .46rem!important;
+  .van-nav-bar {
+    line-height: .22rem;
+    .van-nav-bar__left {
+      padding: 0 .16rem;
+      font-size: .14rem;
+    }
+    .van-nav-bar__title {
+      font-size: .16rem;
+    }
+  }
+  &.user-center-head {
+      .van-nav-bar {
+        .van-nav-bar__content {
+          background: $theme;
+          .van-nav-bar__title, .van-icon {
+            color: #fff;
+          }
+        }
+        &::after {
+          display: none;
+        }
+      }
+  }
+}
+.app-container {
+  width: 100%;
+  height: calc(100% - .46rem);
+  overflow-y: auto;
+  background: #f9f9f9;
+  font-family: PingFangSC-Medium, PingFang SC;
+  font-weight: 400;
+  .van-list {
+      min-height: calc(100vh - .56rem);
+      margin-top: .1rem;
+      border-top: 1px solid #f3f3f3;
+      font-size: .14rem;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #333333;
+      .list-container {
+        background: #fff;
+        .content-item {
+            padding: .2rem 0;
+            margin: 0 .16rem;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: inset 0px -1px 0px 0px #f3f3f3;
+            &.no-shadow {
+              box-shadow: unset;
+            }
+            &:hover {
+              // background: #e9e9e9;
+            }
+        }
+      }
   }
 }
 </style>

@@ -1,18 +1,11 @@
 import Vue from 'vue';
 import axios from 'axios';
+import qs from 'qs';
 import store from '@/store';
 import errorCode from '@/utils/error-code';
 
-const baseURLConfig = {
-    development: 'http://edc-api.dev.dc.sibionics.com',
-    release: 'http://edc-api.test.dc.sibionics.com',
-    production: '',
-};
 
-const baseURL = baseURLConfig[process.env.NODE_ENV];
-
-// const baseURL = 'http://192.168.0.84:18100';
-// const baseURL = 'http://192.168.0.141:18100';
+const baseURL = 'http://47.107.151.192:28092/dhssys/';
 
 const axiosConfig = {
     baseURL,
@@ -52,25 +45,24 @@ Axios.interceptors.response.use(
     async (res) => {
         Vue.prototype.$toast.clear();
 
-        const { code, message } = res.data || {};
+        const { code, msg } = res.data || {};
 
         // 错误提示拦截
         const showMessage = () => {
-            const messageTip = errorCode[code] || message || '服务器响应失败，请稍后再试';
+            const messageTip = errorCode[code] || msg || '服务器响应失败，请稍后再试';
             Vue.prototype.$toast.clear();
             Vue.prototype.$toast(messageTip);
         };
 
         // 返回成功响应
-        if (String(code) === '200') return res;
+        if (String(code) === '0') return res;
 
         showMessage();
 
         // 登录失效拦截
-        if (['401', '906', '907', '908', '909', '999'].includes(String(code))) {
+        if (['10000'].includes(String(code))) {
             // 清除相关菜单权限
             store.commit('clearPermissions');
-            // window.location.replace('/#/login');
         }
 
         return Promise.reject(res);
@@ -84,3 +76,4 @@ Axios.interceptors.response.use(
 
 window.axios = Axios;
 Vue.prototype.$http = Axios;
+Vue.prototype.$qs = qs;

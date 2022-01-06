@@ -35,11 +35,11 @@
               class="placeholder"
               v-else>请选择开始时间</span>
           </div>
-          <span class="mark">—</span>
+          <span class="mark">至</span>
           <div
             class="end-date"
             @click="handlerChooseDate('endDate')">
-            <span v-if="searchParams.startDate">{{ searchParams.endDate }}</span>
+            <span v-if="searchParams.endDate">{{ searchParams.endDate }}</span>
             <span
               class="placeholder"
               v-else>请选择结束时间</span>
@@ -50,12 +50,13 @@
             type="danger"
             block
             round
-            @click="handlerSearch">
+            @click="handlerConfrimDate">
             确认
           </van-button>
         </div>
       </van-dropdown-item>
     </van-dropdown-menu>
+    {{ this.searchParams }}
     <van-calendar
       v-model="calendarVisible"
       @confirm="handlerSelectDate" />
@@ -121,9 +122,12 @@ export default {
     },
     methods: {
         handlerSearch() {
+            console.log('tag', this.searchParams);
+        },
+        handlerConfrimDate() {
             const dropdownItem = this.$refs.dropdownItem;
             if (dropdownItem) dropdownItem.toggle();
-            console.log('tag', this.searchParams);
+            this.handlerSearch();
         },
         handlerChooseDate(code) {
             this.currentDateCode = code;
@@ -168,7 +172,7 @@ export default {
           .mark {
             width: .3rem;
             text-align: center;
-            font-size: .2rem;
+            // font-size: .2rem;
           }
         }
       }
