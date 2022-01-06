@@ -90,7 +90,9 @@
       <div class="popup-title">
         历史搜索
       </div>
-      <div class="popup-content">
+      <div
+        class="popup-content"
+        v-if="historyTag.length">
         <van-tag
           size="large"
           closeable
@@ -104,6 +106,10 @@
           </div>
         </van-tag>
       </div>
+      <van-empty
+        v-else
+        image="search"
+        description="暂无历史搜索记录" />
     </van-popup>
     <van-pull-refresh
       v-model="refreshing"
@@ -365,6 +371,7 @@ export default {
     top: 1rem;
     padding: .12rem;
     padding-bottom: .3rem;
+    min-height: 1.54rem;
     // box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.02);
     .popup-title {
       font-size: .16rem;
@@ -392,6 +399,13 @@ export default {
           border-color: $theme;
           color: $theme;
         }
+      }
+    }
+    .van-empty {
+      padding: 0;
+      .van-empty__image {
+        width: .6rem;
+        height: .6rem;
       }
     }
   }
