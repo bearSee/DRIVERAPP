@@ -1,15 +1,3 @@
-.user-center-head .van-nav-bar .van-nav-bar__content, .my-point-head .van-nav-bar .van-nav-bar__content, .my-order-head .van-nav-bar .van-nav-bar__content, .my-message-head .van-nav-bar .van-nav-bar__content, .point-exchange-head .van-nav-bar .van-nav-bar__content {
-  background: #f0583a;
-}
-
-.user-center-head .van-nav-bar .van-nav-bar__content .van-nav-bar__title, .user-center-head .van-nav-bar .van-nav-bar__content .van-icon, .my-point-head .van-nav-bar .van-nav-bar__content .van-nav-bar__title, .my-point-head .van-nav-bar .van-nav-bar__content .van-icon, .my-order-head .van-nav-bar .van-nav-bar__content .van-nav-bar__title, .my-order-head .van-nav-bar .van-nav-bar__content .van-icon, .my-message-head .van-nav-bar .van-nav-bar__content .van-nav-bar__title, .my-message-head .van-nav-bar .van-nav-bar__content .van-icon, .point-exchange-head .van-nav-bar .van-nav-bar__content .van-nav-bar__title, .point-exchange-head .van-nav-bar .van-nav-bar__content .van-icon {
-  color: #fff;
-}
-
-.user-center-head .van-nav-bar::after, .my-point-head .van-nav-bar::after, .my-order-head .van-nav-bar::after, .my-message-head .van-nav-bar::after, .point-exchange-head .van-nav-bar::after {
-  display: none;
-}
-
 .point-mark {
   display: inline-block;
   border-radius: 50%;

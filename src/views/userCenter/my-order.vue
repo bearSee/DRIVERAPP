@@ -13,13 +13,16 @@
     <van-pull-refresh
       v-model="refreshing"
       @refresh="handlerRefresh">
-      <div class="total-box">
-        订单总消耗积分：{{ totalPoints }} <van-icon name="points" />
+      <div class="head-total-box">
+        订单总消耗积分：
+        <span class="total-points">{{ totalPoints }}</span>
+        <span class="point-mark" />
       </div>
       <van-list
         v-model="loading"
+        loading-text=" "
         :finished="finished"
-        finished-text="没有更多了"
+        :finished-text="tipText"
         @load="getOrderData">
         <div
           class="content-item"
@@ -27,33 +30,38 @@
           :key="order.id">
           <div class="title-box">
             <div class="date-time">
-              {{ order.time }}
+              {{ order.updatedDt }}
             </div>
             <div class="order-num">
-              订单号码：{{ order.orderNum }}
+              订单号码：{{ order.orderNo }}
             </div>
           </div>
-          <div class="goods-box">
-            <img :src="order.image">
+          <div
+            class="goods-box"
+            @click="handlerViewDetail(order)">
+            <img :src="order.productPic">
             <div class="name cut_font_3">
-              {{ order.name }}
+              {{ order.productName }}
             </div>
-            <div class="status">
-              {{ order.statusName }}
+            <div class="total-info">
+              <div class="point-num">
+                {{ order.productPrice }} <span>积分</span>
+              </div>
+              <div>共 {{ order.productNum }} 件</div>
             </div>
           </div>
-          <div class="total-box">
-            <div class="total">
-              共 {{ order.acount }} 件 总计：{{ order.points }} <van-icon name="points" />
+          <div class="operate-box">
+            <div class="status">
+              {{ order.orderStatusName }}
             </div>
-            <div class="operate-box">
+            <div class="operate-btn">
               <van-button
                 type="info"
                 size="mini"
                 plain
                 round
-                :disabled="String(order.status) === '0'"
-                @click="handlerCancel(order)">
+                :disabled="order.orderStatus === 'ORDER_STATUS_CANCELED'"
+                @click="handlerChangeStatus(order, 'ORDER_STATUS_CANCELED')">
                 取消交易
               </van-button>
               <van-button
@@ -61,8 +69,8 @@
                 size="mini"
                 plain
                 round
-                :disabled="String(order.status) === '0'"
-                @click="handlerConfirm(order)">
+                :disabled="order.orderStatus === 'ORDER_STATUS_FINISH'"
+                @click="handlerChangeStatus(order, 'ORDER_STATUS_FINISH')">
                 确认交易
               </van-button>
             </div>
@@ -85,50 +93,55 @@ export default {
             orderData: [],
             pageSize: 20,
             pageIndex: 1,
-            totalPoints: 98,
+            totalPoints: 0,
+            tipText: '',
         };
     },
     methods: {
         getOrderData() {
-            setTimeout(() => {
-                const data = Array(this.pageSize).fill().map((_, i) => ({
-                    status: i % 2,
-                    statusName: i % 2 ? '进行中' : '交易完成',
-                    orderNum: 23777887,
-                    time: '2021-12-12 00:30:56',
-                    name: `【推荐商品】车载手机支架${i}`,
-                    image: 'https://axure-file.lanhuapp.com/2965a46e-cb50-411b-a84b-2bbd9c18fc95__d0c916cce3608bc186581b8f3b3a4946.png',
-                    acount: 1,
-                    points: 46,
-                    id: this.pageSize * (this.pageIndex - 1) + i + 1,
-                }));
-                const total = 100;
-
-                this.orderData.splice(this.orderData.length, 0, ...data);
-                this.pageIndex += 1;
+            this.$http.post('/order/queryPage', this.$qs.stringify({
+                page: this.page,
+                limit: this.limit,
+            })).then((res) => {
+                const { totalCount = 0, list = [] } = (res.data || {}).page || {};
+                this.orderData.splice(this.orderData.length, 0, ...list);
+                this.page += 1;
+                if (this.orderData.length >= totalCount) {
+                    this.tipText = '已经到底了喔';
+                    this.finished = true;
+                }
+            }).finally(() => {
                 this.loading = false;
                 this.refreshing = false;
-
-                if (this.orderData.length >= total) this.finished = true;
-            }, 1000);
+                if (!this.messageData.length) this.tipText = '暂无订单';
+            });
         },
         handlerRefresh() {
             this.finished = false;
             this.loading = true;
-            this.list = [];
-            this.pageSize = 20;
-            this.pageIndex = 1;
+            this.orderData = [];
+            this.limit = 20;
+            this.page = 1;
             this.getOrderData();
         },
-        handlerCancel(order) {
-            console.log('order', order);
+        handlerChangeStatus({ id }, orderStatus) {
+            const tips = {
+                ORDER_STATUS_FINISH: '是否确认交易？',
+                ORDER_STATUS_CANCELED: '是否取消交易？',
+            };
+            this.$dialog.confirm({
+                title: '温馨提示',
+                message: tips[orderStatus],
+            }).then(() => {
+                this.$http.post('/order/updateStatus', this.$qs.stringify({ orderId: id, orderStatus }), { loading: true, loadingText: '加载中...' }).then(() => {
+                    this.$toast.success('操作成功');
+                    this.handlerRefresh();
+                });
+            });
         },
-        handlerConfirm(order) {
-            console.log('order', order);
+        handlerViewDetail({ id }) {
+            this.$router.push(`/order-detail?id=${id}`);
         },
-    },
-    created() {
-        this.getOrderData();
     },
 };
 </script>
@@ -137,63 +150,80 @@ export default {
 @import "@/assets/scss/theme.scss";
 
 .my-order {
-    background: #f1eeee;
-    padding: .1rem;
-    .total-box {
-      .van-icon {
-        color: $theme;
-        opacity: .8;
+    padding: .14rem .12rem;
+    .head-total-box {
+      font-weight: 500;
+      color: #000;
+      .total-points {
+        font-size: .16rem;
+        margin-right: .03rem;
+        font-family: DIN-Medium, DIN;
+        color: #F66A4A;
       }
     }
     .van-list {
+        margin-top: 0;
+        min-height: calc(100vh - 0.9rem);
         .content-item {
-            padding: .12rem .05rem;
+            padding: .14rem .16rem;
             background: #fff;
-            margin: .1rem 0;
-            border-radius: .05rem;
+            margin: .12rem 0;
             font-size: .12rem;
+            box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.02);
+            border-radius: 6px;
             .title-box {
               width: 100%;
-              padding: 0 .05rem;
-              padding-bottom: .05rem;
-              border-bottom: .01rem solid #ebedf0;
+              padding: 0 0 .13rem 0;
+              box-shadow: inset 0px -1px 0px 0px rgba(238, 238, 238, 0.5);
               display: flex;
               justify-content: space-between;
-              .order-num {
-                margin-left: .05rem;
-              }
+              line-height: .17rem;
+              color: #999;
             }
             .goods-box {
               display: flex;
               justify-content: space-between;
-              padding: .08rem .05rem;
-              border-bottom: .01rem solid #ebedf0;
+              padding: .12rem 0 .14rem 0;
               img {
-                width: .5rem;
-                height: .5rem;
-                max-width: .5rem;
-                max-height: .5rem;
+                width: .67rem;
+                height: .67rem;
+                max-width: .67rem;
+                max-height: .67rem;
               }
               .name {
-                margin: auto .05rem;
-                width: calc(100% - 1.1rem);
-                word-break: break-all;
+                margin: auto .08rem;
+                font-size: .14rem;
+                min-width: calc(100% - 2rem);
+                max-width: calc(100% - 1.4rem);
+                font-weight: 500;
+                color: #000000;
+                line-height: .2rem;
               }
-              .status {
-                color: $theme;
+              .total-info {
                 margin: auto 0;
+                color: #666666;
+                text-align: right;
+                .point-num {
+                  font-size: .22rem;
+                  font-family: DIN-Medium, DIN;
+                  font-weight: 500;
+                  color: #F66A4A;
+                  margin-bottom: .05rem;
+                  span {
+                    font-size: .12rem;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                  }
+                }
               }
             }
-            .total-box {
+            .operate-box {
               display: flex;
               justify-content: space-between;
-              margin-top: .1rem;
-              padding: 0 .05rem;
-              .total {
+              .status {
+                color: #999;
                 margin: auto 0;
               }
-              .operate-box {
-                margin: auto 0;
+              .operate-btn {
                 .van-button {
                   border-color: $theme;
                   color: $theme;

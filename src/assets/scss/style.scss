@@ -1,17 +1,5 @@
 @import "./theme.scss";
-.user-center-head, .my-point-head, .my-order-head, .my-message-head, .point-exchange-head {
-    .van-nav-bar {
-       .van-nav-bar__content {
-         background: $theme;
-         .van-nav-bar__title, .van-icon {
-           color: #fff;
-         }
-       }
-       &::after {
-         display: none;
-       }
-    }
-}
+
 .point-mark {
   display: inline-block;
   border-radius: 50%;

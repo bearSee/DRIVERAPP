@@ -15,25 +15,29 @@
       @refresh="handlerRefresh">
       <van-list
         v-model="loading"
+        loading-text=" "
         :finished="finished"
-        finished-text="已经到底了喔"
+        :finished-text="tipText"
         @load="getPointData">
-        <div
-          class="content-item"
-          v-for="point in pointData"
-          :key="point.id">
-          <div class="describe-box">
-            <div class="reason">
-              {{ point.reason }}
-            </div>
-            <div class="datetime">
-              {{ point.time }}
-            </div>
-          </div>
+        <div class="list-container">
           <div
-            class="point-num"
-            :class="String(point.type) === '1' ? 'red' : 'green'">
-            {{ String(point.type) === '1' ? '+' : '-' }} {{ point.pointNum }}
+            class="content-item"
+            :class="i + 1 === pointData.length && 'no-shadow'"
+            v-for="(point, i) in pointData"
+            :key="point.id">
+            <div class="describe-box">
+              <div class="reason">
+                {{ point.sourceTypeName }}
+              </div>
+              <div class="datetime">
+                {{ point.updatedDt }}
+              </div>
+            </div>
+            <div
+              class="point-num"
+              :class="point.score >= 0 ? 'green' : 'red'">
+              {{ (point.score >= 0) ? '+' : '' }} {{ point.score }}
+            </div>
           </div>
         </div>
       </van-list>
@@ -54,6 +58,7 @@ export default {
             pointData: [],
             limit: 20,
             page: 1,
+            tipText: '',
         };
     },
     computed: {
@@ -69,10 +74,14 @@ export default {
                 const { totalCount = 0, list = [] } = (res.data || {}).page || {};
                 this.pointData.splice(this.pointData.length, 0, ...list);
                 this.page += 1;
-                if (this.pointData.length >= totalCount) this.finished = true;
+                if (this.pointData.length >= totalCount) {
+                    this.tipText = '已经到底了喔';
+                    this.finished = true;
+                }
             }).finally(() => {
                 this.loading = false;
                 this.refreshing = false;
+                if (!this.messageData.length) this.tipText = '暂无消息';
             });
         },
         handlerRefresh() {
@@ -84,9 +93,6 @@ export default {
             this.getPointData();
         },
     },
-    created() {
-        this.getPointData();
-    },
 };
 </script>
 
@@ -94,25 +100,8 @@ export default {
 @import "@/assets/scss/theme.scss";
 
 .my-point {
-    padding-bottom: .1rem;
-    background: #f9f9f9;
     .van-list {
-      margin-top: .1rem;
-      border-top: 1px solid #f3f3f3;
-      font-size: .14rem;
-      font-family: PingFangSC-Regular, PingFang SC;
-      font-weight: 400;
-      background: #fff;
-      color: #333333;
         .content-item {
-            padding: .2rem 0;
-            margin: 0 .16rem;
-            display: flex;
-            justify-content: space-between;
-            box-shadow: inset 0px -1px 0px 0px #f3f3f3;
-            &:last-child {
-              box-shadow: none;
-            }
             .describe-box {
                 color: #333;
                 .reason {
