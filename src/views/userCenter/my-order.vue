@@ -2,8 +2,8 @@
  * @Author: 熊望
  * @Date: 2021-12-30 00:11:13
  * @LastEditors: 熊望
- * @LastEditTime: 2021-12-31 00:31:03
- * @FilePath: /nginx/Users/bear/Desktop/DRIVERAPP/src/views/userCenter/my-order.vue
+ * @LastEditTime: 2022-01-07 01:57:54
+ * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/views/userCenter/my-order.vue
  * @Description:
 -->
 
@@ -91,8 +91,8 @@ export default {
             finished: false,
             refreshing: false,
             orderData: [],
-            pageSize: 20,
-            pageIndex: 1,
+            limit: 20,
+            page: 1,
             totalPoints: 0,
             tipText: '',
         };
@@ -113,7 +113,7 @@ export default {
             }).finally(() => {
                 this.loading = false;
                 this.refreshing = false;
-                if (!this.messageData.length) this.tipText = '暂无订单';
+                if (!this.orderData.length) this.tipText = '暂无订单';
             });
         },
         handlerRefresh() {
