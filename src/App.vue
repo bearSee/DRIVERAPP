@@ -2,8 +2,8 @@
  * @Author: 熊望
  * @Date: 2021-12-28 20:10:42
  * @LastEditors: 熊望
- * @LastEditTime: 2021-12-30 23:51:57
- * @FilePath: /nginx/Users/bear/Desktop/DRIVERAPP/src/App.vue
+ * @LastEditTime: 2022-01-05 23:42:40
+ * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/App.vue
  * @Description:
 -->
 <template>
@@ -21,9 +21,33 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 
 export default {
     name: 'App',
+    methods: {
+        ...mapMutations(['replaceUserInfo']),
+    },
+    mounted() {
+        this.replaceUserInfo({
+            company: '22',
+            createdDt: '2021-12-31 00:38:58',
+            createdUserId: null,
+            enabled: 'Y',
+            id: '1476593663708585986',
+            identityNo: '22',
+            invitationCode: 'I0FCUH',
+            label: null,
+            mobile: '13800000000',
+            score: 989,
+            updatedDt: '2021-12-31 01:53:56',
+            updatedUserId: null,
+            userName: '张三',
+            userType: 'USER_TYPE_TAKEAWAY',
+            userTypeName: '外卖司机',
+            vehicleNo: '22',
+        });
+    },
 };
 </script>
 <style lang="scss">
