@@ -45,7 +45,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
 
 export default {
     name: 'MyPoint',
@@ -60,13 +59,9 @@ export default {
             tipText: '',
         };
     },
-    computed: {
-        ...mapState(['userInfo']),
-    },
     methods: {
         getPointData() {
-            this.$http.post('/user/score/detail', this.$qs.stringify({
-                userId: this.userInfo.id,
+            this.$http.post('/myScore', this.$qs.stringify({
                 page: this.page,
                 limit: this.limit,
             })).then((res) => {

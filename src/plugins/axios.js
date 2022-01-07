@@ -4,8 +4,8 @@ import qs from 'qs';
 import store from '@/store';
 import errorCode from '@/utils/error-code';
 
-const host = 'http://47.107.151.192:28092';
-const baseURL = `${host}/dhssys/`;
+const host = 'http://47.107.151.192:28091';
+const baseURL = `${host}/dhs/`;
 
 const axiosConfig = {
     baseURL,
@@ -16,8 +16,10 @@ const Axios = axios.create(axiosConfig);
 // 请求拦截
 Axios.interceptors.request.use(
     (config) => {
-        // UUID || 生成随机数
-        config.headers = config.headers;
+        config.headers = {
+            ...config.headers,
+            Authorization: window.localStorage.getItem('Authorization'),
+        };
         // get请求增加时间戳，避免服务器304
         if (config.method === 'get') {
             config.params = {

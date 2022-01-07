@@ -43,14 +43,14 @@
           @change="handlerRefresh" />
         <van-dropdown-item
           class="dropdown-date"
-          :title-class="(searchParams.exchangeBeginDate || searchParams.exchangeEndDate) && 'is-active'"
+          :title-class="(searchParams.beginDate || searchParams.endDate) && 'is-active'"
           title="上新时间"
           ref="dropdownItem">
           <van-cell class="date-box">
             <div
               class="start-date"
-              @click="handlerChooseDate('exchangeBeginDate')">
-              <span v-if="searchParams.exchangeBeginDate">{{ searchParams.exchangeBeginDate }}</span>
+              @click="handlerChooseDate('beginDate')">
+              <span v-if="searchParams.beginDate">{{ searchParams.beginDate }}</span>
               <span
                 class="placeholder"
                 v-else>请选择开始时间</span>
@@ -58,8 +58,8 @@
             <span class="mark">至</span>
             <div
               class="end-date"
-              @click="handlerChooseDate('exchangeEndDate')">
-              <span v-if="searchParams.exchangeEndDate">{{ searchParams.exchangeEndDate }}</span>
+              @click="handlerChooseDate('endDate')">
+              <span v-if="searchParams.endDate">{{ searchParams.endDate }}</span>
               <span
                 class="placeholder"
                 v-else>请选择结束时间</span>
@@ -190,6 +190,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
 
 export default {
     name: 'PointExchangeIndex',
@@ -200,8 +201,8 @@ export default {
                 productName: '',
                 productStatus: '',
                 productCategoryId: '',
-                exchangeBeginDate: '',
-                exchangeEndDate: '',
+                beginDate: '',
+                endDate: '',
             },
             goodsStatusOptions: [],
             goodsTypeOptions: [],
@@ -219,8 +220,9 @@ export default {
         };
     },
     methods: {
+        ...mapMutations(['setCurrentGoodsInfo']),
         getGoodsType() {
-            this.$http.post('/product/info/queryPage', this.$qs.stringify({ page: 1, limit: 999 })).then((res) => {
+            this.$http.post('/product/category/queryPage', this.$qs.stringify({ page: 1, limit: 999 })).then((res) => {
                 this.goodsTypeOptions = [
                     {
                         text: '所有商品',
@@ -278,7 +280,7 @@ export default {
             }).finally(() => {
                 this.loading = false;
                 this.refreshing = false;
-                if (!this.goodsData.length) this.tipText = '暂无订单';
+                if (!this.goodsData.length) this.tipText = '暂无商品';
             });
         },
         handlerRefresh() {
@@ -309,8 +311,8 @@ export default {
         },
         handlerSelectDate(date) {
             this.$set(this.searchParams, this.currentDateCode, window.formatDate(date));
-            const { exchangeBeginDate, exchangeEndDate } = this.searchParams;
-            if (exchangeBeginDate && exchangeEndDate && (exchangeBeginDate > exchangeEndDate)) {
+            const { beginDate, endDate } = this.searchParams;
+            if (beginDate && endDate && (beginDate > endDate)) {
                 this.$toast('开始日期不能大于结束日期');
                 this.$set(this.searchParams, this.currentDateCode, '');
             }
@@ -319,8 +321,8 @@ export default {
         handlerClearDate() {
             this.searchParams = {
                 ...this.searchParams,
-                exchangeBeginDate: '',
-                exchangeEndDate: '',
+                beginDate: '',
+                endDate: '',
             };
         },
         handlerChooseTag(tag) {
@@ -335,8 +337,9 @@ export default {
             this.searchParams.recommendFlag = this.searchParams.recommendFlag === 'Y' ? 'N' : 'Y';
             this.handlerRefresh();
         },
-        handlerExchange({ id }) {
-            this.$router.push(`/goods-detail?id=${id}`);
+        handlerExchange(goodsInfo) {
+            this.setCurrentGoodsInfo(goodsInfo);
+            this.$router.push('/goods-detail');
         },
     },
     created() {

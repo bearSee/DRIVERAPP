@@ -7,7 +7,7 @@
       :duration="1000"
       @change="swipeChange">
       <van-swipe-item
-        v-for="image in (goodsInfo.images || [])"
+        v-for="image in goodsImages"
         :key="image.id">
         <van-image
           fit="cover"
@@ -15,7 +15,7 @@
       </van-swipe-item>
       <template #indicator>
         <div class="custom-indicator">
-          {{ swipeIndex + 1 }}/{{ (goodsInfo.images || []).length }}
+          {{ swipeIndex + 1 }}/{{ goodsImages.length }}
         </div>
       </template>
     </van-swipe>
@@ -111,7 +111,7 @@
                 class="exchange"
                 size="mini"
                 type="primary"
-                @click="getGoodsDetail(goods.id)">
+                @click="getGoodsDetail(goods)">
                 去看看
               </van-button>
             </div>
@@ -131,59 +131,20 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 
 export default {
     name: 'GoodsDetail',
     data() {
         return {
             swipeIndex: 0,
-            goodsInfo: {
-                address: '广东省深圳市南山区科技园100号',
-                categoryCode: 'jd',
-                categoryName: '家电',
-                createdDt: '2022-01-02 00:01:40',
-                createdUserId: null,
-                enabled: 'Y',
-                exchangeBeginDate: '2022-01-01',
-                exchangeEndDate: '2022-12-30',
-                exchangeNum: 3,
-                id: '1477309053105807362',
-                price: 25,
-                productCategoryId: '1477290472188035073',
-                productDesc: '最新iphone 13',
-                productName: '最新iphone13非常好用最新iphone13非常好用最新iphone13非常好用最新iphone13非常好用最新iphone13非常好用',
-                productNum: 100,
-                productStatus: 'PRODUCT_STATUS_2',
-                productStatusName: '正常',
-                publishStatus: 'Y',
-                publishStatusName: null,
-                recommendFlag: 'Y',
-                recommendFlagName: '是',
-                recommendReason: '非常好用非常好用非常好用非常好用非常好用非常好用非常好用非常好用非常好用非常好用非常好用',
-                updatedDt: '2022-01-02 00:01:40',
-                updatedUserId: null,
-                images: [
-                    {
-                        filePath: '/product/images/2022/01/06/ec8dfc59-393f-464d-8040-3103fd3f7d9e.jpg',
-                        fileType: 'PICTURE',
-                        id: '1478773455869493249',
-                        isFirst: 'N',
-                        productInfoId: '1477309053105807362',
-                        remark: 'jjhh5565',
-                    },
-                    {
-                        fileOriginalName: '商品图片1641492749463.jpg',
-                        filePath: '/product/images/2022/01/07/5b35121f-6038-41ca-b88c-68c662ad3eab.jpg',
-                        fileType: 'PICTURE',
-                        id: '1479153920421969922',
-                        isFirst: 'Y',
-                        productInfoId: '1477309053105807362',
-                        remark: '',
-                    },
-                ],
-            },
+            goodsImages: [],
+            goodsInfo: {},
             recommendData: [],
         };
+    },
+    computed: {
+        ...mapState(['currentGoodsInfo']),
     },
     methods: {
         swipeChange(index) {
@@ -208,30 +169,38 @@ export default {
             } catch (error) {
                 console.error('兑换日期格式错误', error);
             }
-            this.goodsInfo = { ...info, timeOut, timeOutPercent };
+            return { ...info, timeOut, timeOutPercent };
         },
-        // eslint-disable-next-line no-unused-vars
-        getGoodsDetail(id) {
-            this.resetGoodsInfo(this.goodsInfo);
-            // if (!id) return;
-            // this.$http.post('/', this.$qs.stringify({ id }), { loading: true }).then((res) => {
-            //     const data = ((res.data || {}).page || {});
-            //     this.resetGoodsInfo(data);
-            // });
+        getGoodsImages() {
+            this.$http.post('/product/file/list', this.$qs.stringify({
+                productInfoId: this.goodsInfo.id,
+                page: 1,
+                limit: 10,
+            }), { loading: true }).then((res) => {
+                this.goodsImages = (res.data || {}).data || [];
+            });
         },
-        getRecommendData(id) {
-            if (!id) return;
-            this.$http.post('/product/info/queryPage', this.$qs.stringify({ id, page: 1, limit: 10 }), { loading: true }).then((res) => {
+        getGoodsDetail(data) {
+            const info = data || this.currentGoodsInfo;
+            this.goodsInfo = this.resetGoodsInfo(info);
+            this.getRecommendData();
+            this.getGoodsImages();
+        },
+        getRecommendData() {
+            this.$http.post('/product/info/queryPage', this.$qs.stringify({ id: this.goodsInfo.id, page: 1, limit: 10 }), { loading: true }).then((res) => {
                 // const data = ((res.data || {}).page || {});
                 this.recommendData = ((res.data || {}).page || {}).list || [];
             });
         },
-        handlerBuy() {},
+        handlerBuy() {
+            this.$http.post('/product/info/submit', this.$qs.stringify({ productInfoId: this.goodsInfo.id }), { loading: true }).then(() => {
+                this.$toast.success('购买成功');
+                this.$router.push('/my-order');
+            });
+        },
     },
     created() {
-        const goodsId = this.$route.query.id || '';
-        this.getGoodsDetail(goodsId);
-        this.getRecommendData(goodsId);
+        this.getGoodsDetail();
     },
 };
 </script>

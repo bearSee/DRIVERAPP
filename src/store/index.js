@@ -8,26 +8,42 @@ const debug = process.env.NODE_ENV !== 'production';
 const store = new Vuex.Store({
     state: {
         // 需要缓存的数据
-        keepAliveKeys: ['userInfo'],
+        keepAliveKeys: ['userInfo', 'currentGoodsInfo'],
+        logined: false,
         // 用户信息
         userInfo: {},
+        // 当前商品信息
+        currentGoodsInfo: {},
     },
     mutations: {
+        setLoginStatus(state, payload) {
+            state.logined = payload;
+        },
         setUserInfo(state, payload) {
             state.userInfo = { ...state.userInfo, ...payload };
         },
         replaceUserInfo(state, payload) {
             state.userInfo = payload || {};
         },
+        setCurrentGoodsInfo(state, payload) {
+            state.currentGoodsInfo = payload;
+        },
         clearPermissions(state, saveStorage) {
             state.userInfo = {};
+            state.logined = false;
             if (!saveStorage) window.localStorage.clear();
         },
     },
     actions: {
+        handlerLogin({ commit }, mobile) {
+            Vue.prototype.$http.post('/init/login', Vue.prototype.$qs.stringify({ mobile }), { loading: true, loadingText: '加载中...' }).then((res) => {
+                window.localStorage.setItem('Authorization', (res && res.data || {}).Authorization);
+                commit('setLoginStatus', true);
+            });
+        },
         getUserInfo({ commit }) {
             return new Promise((resolve) => {
-                Vue.prototype.$http.get('/edc-user-service/user/currentUser').then((res) => {
+                Vue.prototype.$http.post('/user/info', {}, { loading: true, loadingText: '加载中...' }).then((res) => {
                     commit('replaceUserInfo', (res && res.data || {}).data || {});
                 }).finally(resolve);
             });

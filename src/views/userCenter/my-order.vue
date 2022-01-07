@@ -98,7 +98,7 @@ export default {
     },
     methods: {
         getOrderData() {
-            this.$http.post('/order/queryPage', this.$qs.stringify({
+            this.$http.post('/myOrder', this.$qs.stringify({
                 page: this.page,
                 limit: this.limit,
             })).then((res) => {

@@ -35,11 +35,11 @@
               </div>
             </div>
             <div class="date-box">
-              <span>{{ message.time }}</span>
+              <span>{{ message.createdDt }}</span>
               <div
                 class="status"
-                :class="'status_' + message.status">
-                {{ message.statusName }}
+                :class="'status_' + message.readStatus">
+                {{ message.readStatusName }}
               </div>
             </div>
           </div>
@@ -66,18 +66,9 @@ export default {
     },
     methods: {
         getMessageData() {
-            this.$http.post('/message/findMsgByUser').then((res) => {
-                const data = Array(3).fill().map((_, i) => ({
-                    status: i % 2,
-                    statusName: i % 2 ? '新消息' : '已读',
-                    time: '2021-12-12 00:30:56',
-                    title: '第三次XXX公益活动开始报名啦！',
-                    content: '开始报名啦！开始报名啦！开始报名啦！开始报名啦！开始报名啦！开始报名啦！开始报名啦！开始报名啦！开始报名啦！',
-                    id: i,
-                }));
+            this.$http.post('/myMessage').then((res) => {
                 const { totalCount = 0, list = [] } = (res.data || {}).page || {};
                 this.messageData.splice(this.messageData.length, 0, ...list);
-                this.messageData.splice(this.messageData.length, 0, ...data);
                 this.page += 1;
                 if (this.messageData.length >= totalCount) {
                     this.tipText = '已经到底了喔';
@@ -141,10 +132,10 @@ export default {
               .status {
                 font-size: .13rem;
                 margin: auto 0;
-                &_0 {
+                &_Y {
                   color: #999;
                 }
-                &_1 {
+                &_N {
                   color: $theme;
                 }
               }

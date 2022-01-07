@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
     name: 'UserCenterIndex',
@@ -217,6 +217,8 @@ export default {
         ...mapState(['userInfo']),
     },
     methods: {
+        ...mapActions(['getUserInfo']),
+        // getActionData() {},
         handlerSign() {},
         handlerClick(code) {
             this.$router.push('/point-exchange');
@@ -225,6 +227,9 @@ export default {
         handlerQuestion(code) {
             console.log('handlerQuestion-code', code);
         },
+    },
+    created() {
+        this.getUserInfo();
     },
     filters: {
         formatMoney: window.formatMoney,
