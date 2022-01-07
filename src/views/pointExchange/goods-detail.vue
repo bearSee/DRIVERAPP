@@ -131,7 +131,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 
 export default {
     name: 'GoodsDetail',
@@ -147,6 +147,7 @@ export default {
         ...mapState(['currentGoodsInfo']),
     },
     methods: {
+        ...mapMutations(['setCurrentGoodsInfo']),
         swipeChange(index) {
             this.swipeIndex = index;
         },
@@ -185,6 +186,9 @@ export default {
             this.goodsInfo = this.resetGoodsInfo(info);
             this.getRecommendData();
             this.getGoodsImages();
+            this.setCurrentGoodsInfo(info);
+            this.swipeIndex = 0;
+            this.$el.scrollTop = 0;
         },
         getRecommendData() {
             this.$http.post('/product/info/queryPage', this.$qs.stringify({ id: this.goodsInfo.id, page: 1, limit: 10 }), { loading: true }).then((res) => {

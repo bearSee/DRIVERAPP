@@ -208,7 +208,7 @@ export default {
                     icon: 'exchange',
                     image: 'exchange.png',
                     pointNum: 50,
-                    status: 1,
+                    status: 2,
                 },
             ],
         };
@@ -219,13 +219,33 @@ export default {
     methods: {
         ...mapActions(['getUserInfo']),
         // getActionData() {},
-        handlerSign() {},
-        handlerClick(code) {
-            this.$router.push('/point-exchange');
-            console.log('handlerClick-code', code);
+        handlerSign() {
+            this.$dialog.alert({
+                title: '温馨提示',
+                message: '签到: 正在联调中',
+                theme: 'round-button',
+            });
         },
         handlerQuestion(code) {
-            console.log('handlerQuestion-code', code);
+            this.$dialog.alert({
+                title: '温馨提示',
+                message: `${code}: 这是个提示，内容需求还没给`,
+                theme: 'round-button',
+            });
+        },
+        handlerClick(code) {
+            if (this[code]) {
+                this[code]();
+            } else {
+                this.$dialog.alert({
+                    title: '温馨提示',
+                    message: `${code}: 正在联调中`,
+                    theme: 'round-button',
+                });
+            }
+        },
+        exchange() {
+            this.$router.push('/point-exchange');
         },
     },
     created() {
