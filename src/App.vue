@@ -64,7 +64,7 @@ html{
 html,body{
   height: 100vh;
   width: 100vh;
-  background-color: #f9fbff;
+  background: #f9f9f9;
   padding: 0 !important;
   font-size: 100px;
 }
@@ -88,6 +88,9 @@ a {
     .van-nav-bar__left {
       padding: 0 .16rem;
       font-size: .14rem;
+      .van-icon-arrow-left {
+        color: $theme;
+      }
     }
     .van-nav-bar__title {
       font-size: .16rem;
@@ -111,7 +114,6 @@ a {
   width: 100%;
   height: calc(100% - .46rem);
   overflow-y: auto;
-  background: #f9f9f9;
   font-family: PingFangSC-Medium, PingFang SC;
   font-weight: 400;
   .van-list {

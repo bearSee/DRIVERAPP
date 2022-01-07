@@ -219,13 +219,10 @@ export default {
     methods: {
         handlerSign() {},
         handlerClick(code) {
-            // eslint-disable-next-line no-alert
-            alert('handlerClick-code');
+            this.$router.push('/point-exchange');
             console.log('handlerClick-code', code);
         },
         handlerQuestion(code) {
-            // eslint-disable-next-line no-alert
-            alert('handlerQuestion');
             console.log('handlerQuestion-code', code);
         },
     },

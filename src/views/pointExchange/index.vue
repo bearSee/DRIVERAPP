@@ -32,25 +32,25 @@
         <van-dropdown-item
           class="goods-status"
           v-model="searchParams.productStatus"
-          :title-class="searchParams.productStatus !== '' && 'is-active'"
+          :title-class="searchParams.productStatus !== '' && 'is-active' || ''"
           :options="goodsStatusOptions"
           @change="handlerRefresh" />
         <van-dropdown-item
           class="goods-type"
           v-model="searchParams.productCategoryId"
-          :title-class="searchParams.productCategoryId !== '' && 'is-active'"
+          :title-class="searchParams.productCategoryId !== '' && 'is-active' || ''"
           :options="goodsTypeOptions"
           @change="handlerRefresh" />
         <van-dropdown-item
           class="dropdown-date"
-          :title-class="(searchParams.startDate || searchParams.endDate) && 'is-active'"
+          :title-class="(searchParams.exchangeBeginDate || searchParams.exchangeEndDate) && 'is-active'"
           title="上新时间"
           ref="dropdownItem">
           <van-cell class="date-box">
             <div
               class="start-date"
-              @click="handlerChooseDate('startDate')">
-              <span v-if="searchParams.startDate">{{ searchParams.startDate }}</span>
+              @click="handlerChooseDate('exchangeBeginDate')">
+              <span v-if="searchParams.exchangeBeginDate">{{ searchParams.exchangeBeginDate }}</span>
               <span
                 class="placeholder"
                 v-else>请选择开始时间</span>
@@ -58,8 +58,8 @@
             <span class="mark">至</span>
             <div
               class="end-date"
-              @click="handlerChooseDate('endDate')">
-              <span v-if="searchParams.endDate">{{ searchParams.endDate }}</span>
+              @click="handlerChooseDate('exchangeEndDate')">
+              <span v-if="searchParams.exchangeEndDate">{{ searchParams.exchangeEndDate }}</span>
               <span
                 class="placeholder"
                 v-else>请选择结束时间</span>
@@ -122,15 +122,63 @@
         @load="getGoodsData">
         <div
           class="content-item"
-          v-for="order in goodsData"
-          :key="order.id">
+          v-for="goods in goodsData"
+          :key="goods.id">
           <div class="image-box">
+            <van-tag
+              mark
+              type="danger"
+              v-if="goods.recommendFlag === 'Y'">
+              推荐
+            </van-tag>
             <img
-              src=""
-              alt="1">
+              class="goods-img"
+              v-if="goods.filePath"
+              :src="goods.filePath"
+              alt="暂无图片">
+            <van-empty
+              image="error"
+              description="暂无图片" />
           </div>
           <div class="content-box">
-            123
+            <div class="g-title cut_font_2">
+              {{ goods.productName }}
+            </div>
+            <div class="time-out-control">
+              <span>剩余兑换时间</span>
+              <div
+                class="end-status green"
+                v-if="goods.timeOut === -1">
+                暂未开始
+              </div>
+              <div
+                class="end-status red"
+                v-else-if="goods.timeOut === -2">
+                已截止
+              </div>
+              <van-count-down
+                v-else
+                format="DD天 HH:mm:ss"
+                :time="goods.timeOut" />
+            </div>
+            <div class="time-out-status">
+              <div :style="`width: ${goods.timeOutPercent || 0}%;`" />
+            </div>
+            <div class="price-box">
+              <div class="price">
+                <span class="pri-num">{{ goods.price }} </span>
+                <span>积分/可兑换 {{ goods.exchangeNum }} 次</span>
+              </div>
+              <van-button
+                round
+                class="exchange"
+                size="mini"
+                type="primary"
+                :disabled="goods.productStatus !== 'PRODUCT_STATUS_2' || goods.timeOut <= 0"
+                @click="handlerExchange(goods)">
+                立即兑换
+              </van-button>
+            </div>
           </div>
         </div>
       </van-list>
@@ -152,8 +200,8 @@ export default {
                 productName: '',
                 productStatus: '',
                 productCategoryId: '',
-                startDate: '',
-                endDate: '',
+                exchangeBeginDate: '',
+                exchangeEndDate: '',
             },
             goodsStatusOptions: [],
             goodsTypeOptions: [],
@@ -200,7 +248,28 @@ export default {
                 limit: this.limit,
             }, { loading: true })).then((res) => {
                 const { totalCount = 0, list = [] } = (res.data || {}).page || {};
-                this.goodsData.splice(this.goodsData.length, 0, ...list);
+                const data = list.map((d) => {
+                    let timeOut = 0;
+                    let timeOutPercent = 0;
+                    try {
+                        const endTime = new Date(d.exchangeEndDate).getTime();
+                        const startTime = new Date(d.exchangeBeginDate).getTime();
+                        const currentTime = new Date().getTime();
+                        // -1 暂未开始 -2 已经结束
+                        if (startTime > currentTime) {
+                            timeOut = -1;
+                        } else if (currentTime > endTime) {
+                            timeOut = -2;
+                        } else {
+                            timeOut = endTime - currentTime;
+                            timeOutPercent = ((timeOut / (endTime - startTime) * 100) || 0).toFixed(2);
+                        }
+                    } catch (error) {
+                        console.error('兑换日期格式错误', error);
+                    }
+                    return { ...d, timeOut, timeOutPercent };
+                });
+                this.goodsData.splice(this.goodsData.length, 0, ...data);
                 this.page += 1;
                 if (this.goodsData.length >= totalCount) {
                     this.tipText = '已经到底了喔';
@@ -240,8 +309,8 @@ export default {
         },
         handlerSelectDate(date) {
             this.$set(this.searchParams, this.currentDateCode, window.formatDate(date));
-            const { startDate, endDate } = this.searchParams;
-            if (startDate && endDate && (startDate > endDate)) {
+            const { exchangeBeginDate, exchangeEndDate } = this.searchParams;
+            if (exchangeBeginDate && exchangeEndDate && (exchangeBeginDate > exchangeEndDate)) {
                 this.$toast('开始日期不能大于结束日期');
                 this.$set(this.searchParams, this.currentDateCode, '');
             }
@@ -250,8 +319,8 @@ export default {
         handlerClearDate() {
             this.searchParams = {
                 ...this.searchParams,
-                startDate: '',
-                endDate: '',
+                exchangeBeginDate: '',
+                exchangeEndDate: '',
             };
         },
         handlerChooseTag(tag) {
@@ -265,6 +334,9 @@ export default {
         handlerRecommend() {
             this.searchParams.recommendFlag = this.searchParams.recommendFlag === 'Y' ? 'N' : 'Y';
             this.handlerRefresh();
+        },
+        handlerExchange({ id }) {
+            this.$router.push(`/goods-detail?id=${id}`);
         },
     },
     created() {
@@ -420,6 +492,100 @@ export default {
           font-size: .12rem;
           box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.02);
           border-radius: 6px;
+          display: flex;
+          .image-box {
+            position: relative;
+            .van-tag {
+              position: absolute;
+              left: 0;
+              top: 0;
+            }
+            .goods-img {
+              width: 1rem;
+              min-width: 1rem;
+              height: 1rem;
+            }
+            .van-empty {
+              width: 1rem;
+              min-width: 1rem;
+              height: 1rem;
+              border: .01rem solid #f6f6f6;
+              .van-empty__image {
+                width: .6rem;
+                height: .6rem;
+              }
+              .van-empty__description {
+                padding: 0;
+              }
+            }
+          }
+          .content-box {
+            margin-left: .08rem;
+            width: calc(100% - 1.08rem);
+            .g-title {
+              height: .4rem;
+              font-size: .14rem;
+              font-weight: 500;
+              color: #333333;
+              line-height: .2rem;
+            }
+            .time-out-control {
+              margin-top: .1rem;
+              display: flex;
+              color: #999;
+              font-size: .12rem;
+              line-height: .2rem;
+              &>span {
+                margin: auto 0;
+              }
+              .end-status {
+                color: $theme;
+                margin-left: .09rem;
+                .green {
+                  color: #59C13F;
+                }
+              }
+              .van-count-down {
+                margin-left: .05rem;
+                color: $theme;
+                font-size: .12rem;
+              }
+            }
+            .time-out-status {
+              width: 1.3rem;
+              height: .05rem;
+              margin-top: .04rem;
+              background: #EEEEEE;
+              border-radius: 3px;
+              & > div {
+                height: 5px;
+                background: linear-gradient(270deg, #FF6A34 0%, #FFB048 100%);
+                border-radius: 3px;
+              }
+            }
+            .price-box {
+              font-size: .12rem;
+              font-weight: 500;
+              color: #999;
+              display: flex;
+              justify-content: space-between;
+              .price {
+                margin-top: .05rem;
+                .pri-num {
+                  color: #FF6541;
+                  font-family: DIN-Medium, DIN;
+                }
+              }
+              .exchange {
+                margin: auto 0;
+                width: .62rem;
+                height: .21rem;
+                background: #F66A4A;
+                border-radius: .11rem;
+                border: 0;
+              }
+            }
+          }
       }
       .van-list__loading {
         display: none;

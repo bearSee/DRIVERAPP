@@ -15,7 +15,6 @@
       @refresh="handlerRefresh">
       <van-list
         v-model="loading"
-        loading-text=" "
         :finished-text="tipText"
         :finished="finished"
         @load="getMessageData">
@@ -151,6 +150,9 @@ export default {
               }
             }
         }
+      }
+      .van-list__loading {
+        display: none;
       }
     }
 }

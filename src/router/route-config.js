@@ -8,6 +8,7 @@
  */
 
 import pointExchange from '@/views/pointExchange/index';
+import goodsDetail from '@/views/pointExchange/goods-detail';
 import userCenter from '@/views/userCenter/index';
 import myPoint from '@/views/userCenter/my-point';
 import myOrder from '@/views/userCenter/my-order';
@@ -35,6 +36,14 @@ export default {
                 keepAlive: false,
             },
             component: pointExchange,
+        },
+        {
+            path: '/goods-detail',
+            name: '商品详情',
+            meta: {
+                keepAlive: false,
+            },
+            component: goodsDetail,
         },
         {
             path: '/user-center',

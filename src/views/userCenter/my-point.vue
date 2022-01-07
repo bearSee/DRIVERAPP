@@ -15,7 +15,6 @@
       @refresh="handlerRefresh">
       <van-list
         v-model="loading"
-        loading-text=" "
         :finished="finished"
         :finished-text="tipText"
         @load="getPointData">
@@ -130,6 +129,9 @@ export default {
                     color: #59C13F;
                 }
             }
+        }
+        .van-list__loading {
+          display: none;
         }
     }
 }

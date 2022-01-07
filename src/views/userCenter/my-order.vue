@@ -20,7 +20,6 @@
       </div>
       <van-list
         v-model="loading"
-        loading-text=" "
         :finished="finished"
         :finished-text="tipText"
         @load="getOrderData">
@@ -140,7 +139,7 @@ export default {
             });
         },
         handlerViewDetail({ id }) {
-            this.$router.push(`/order-detail?id=${id}`);
+            this.$router.push(`/goods-detail?id=${id}`);
         },
     },
 };
@@ -232,6 +231,9 @@ export default {
                 }
               }
             }
+        }
+        .van-list__loading {
+          display: none;
         }
     }
 }
