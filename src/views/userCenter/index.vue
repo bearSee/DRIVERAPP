@@ -95,8 +95,12 @@
             <div class="ac-content">
               <div class="ac-title">
                 <span class="ac-name">{{ active.name }}</span>
-                <span class="point-num">+{{ active.pointNum }}</span>
-                <span class="point-mark" />
+                <span
+                  class="point-num"
+                  v-if="active.pointNum">+{{ active.pointNum }}</span>
+                <span
+                  class="point-mark"
+                  v-if="active.pointNum" />
               </div>
               <div class="ac-describe">
                 {{ active.describe }}
@@ -157,7 +161,7 @@ export default {
                     describe: '随意分享活动，一键get积分奖励',
                     icon: 'share-o',
                     image: 'share.png',
-                    pointNum: 100,
+                    pointNum: 0,
                     status: 2,
                 },
                 {
@@ -167,17 +171,17 @@ export default {
                     describe: '点赞任意活动，即可收获积分！',
                     icon: 'good-job-o',
                     image: 'thumbs-up.png',
-                    pointNum: 80,
+                    pointNum: 0,
                     status: 2,
                 },
                 {
                     name: '评论',
                     btnName: '去评论',
                     code: 'comment',
-                    describe: '升级为精华评论，任务奖励收入囊中！',
+                    describe: '升级为精华评论，任务奖励收入囊中!',
                     icon: 'comment-o',
                     image: 'comment.png',
-                    pointNum: 80,
+                    pointNum: 0,
                     status: 2,
                 },
                 {
@@ -187,7 +191,7 @@ export default {
                     describe: '今日签到成功，即可获得当日积分！',
                     icon: 'sign',
                     image: 'sign.png',
-                    pointNum: 50,
+                    pointNum: 0,
                     status: 1,
                 },
                 {
@@ -197,7 +201,7 @@ export default {
                     describe: '首次登陆成功，轻松获得积分！',
                     icon: 'certificate',
                     image: 'login.png',
-                    pointNum: 30,
+                    pointNum: 0,
                     status: 1,
                 },
                 {
@@ -207,7 +211,7 @@ export default {
                     describe: '首次参与兑换，还能获得积分！',
                     icon: 'exchange',
                     image: 'exchange.png',
-                    pointNum: 50,
+                    pointNum: 0,
                     status: 2,
                 },
             ],

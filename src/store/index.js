@@ -1,3 +1,11 @@
+/*
+ * @Author: 熊望
+ * @Date: 2022-01-07 22:59:31
+ * @LastEditors: 熊望
+ * @LastEditTime: 2022-01-08 22:44:35
+ * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/store/index.js
+ * @Description:
+ */
 import Vue from 'vue';
 import Vuex from 'vuex';
 
@@ -8,7 +16,7 @@ const debug = process.env.NODE_ENV !== 'production';
 const store = new Vuex.Store({
     state: {
         // 需要缓存的数据
-        keepAliveKeys: ['userInfo', 'currentGoodsInfo'],
+        keepAliveKeys: ['userInfo', 'currentGoodsInfo', 'logined'],
         logined: false,
         // 用户信息
         userInfo: {},
@@ -30,6 +38,7 @@ const store = new Vuex.Store({
         },
         clearPermissions(state, saveStorage) {
             state.userInfo = {};
+            state.currentGoodsInfo = {};
             state.logined = false;
             if (!saveStorage) window.localStorage.clear();
         },
