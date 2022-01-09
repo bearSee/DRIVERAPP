@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2021-12-30 00:11:13
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-09 21:45:24
+ * @LastEditTime: 2022-01-09 23:00:07
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/views/userCenter/my-order.vue
  * @Description:
 -->
@@ -60,7 +60,7 @@
                 plain
                 round
                 :disabled="order.orderStatus !== 'ORDER_STATUS_NEW'"
-                @click="handlerChangeStatus(order, 'ORDER_STATUS_CANCELED')">
+                @click="handlerChangeStatus(order, 'cancel')">
                 取消交易
               </van-button>
               <van-button
@@ -69,7 +69,7 @@
                 plain
                 round
                 :disabled="order.orderStatus !== 'ORDER_STATUS_WAIT_CONFIRM'"
-                @click="handlerChangeStatus(order, 'ORDER_STATUS_FINISH')">
+                @click="handlerChangeStatus(order, 'confirm')">
                 确认交易
               </van-button>
             </div>
@@ -126,16 +126,23 @@ export default {
             this.page = 1;
             this.getOrderData();
         },
-        handlerChangeStatus({ id }, orderStatus) {
-            const tips = {
-                ORDER_STATUS_FINISH: '是否确认交易？',
-                ORDER_STATUS_CANCELED: '是否取消交易？',
+        handlerChangeStatus({ id }, type) {
+            const obj = {
+                cancel: {
+                    url: '/order/cancel',
+                    message: '是否取消交易？',
+                },
+                confirm: {
+                    url: '/order/confirm',
+                    message: '是否确认交易？',
+                },
             };
+            const { message, url } = obj[type];
             this.$dialog.confirm({
                 title: '温馨提示',
-                message: tips[orderStatus],
+                message,
             }).then(() => {
-                this.$http.post('/order/updateStatus', this.$qs.stringify({ orderId: id, orderStatus }), { loading: true, loadingText: '加载中...' }).then(() => {
+                this.$http.post(url, this.$qs.stringify({ orderId: id }), { loading: true, loadingText: '加载中...' }).then(() => {
                     this.$toast.success('操作成功');
                     this.handlerRefresh();
                 });
