@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2022-01-07 22:59:31
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-09 21:10:26
+ * @LastEditTime: 2022-01-10 00:33:00
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/plugins/axios.js
  * @Description:
  */
@@ -12,8 +12,8 @@ import qs from 'qs';
 import store from '@/store';
 import errorCode from '@/utils/error-code';
 
-const host = 'http://47.107.151.192:28091/';
-// const host = `${window.location.origin}${window.location.pathname}`;
+// const host = 'http://47.107.151.192:28091/';
+const host = `${window.location.origin}${window.location.pathname}`;
 const baseURL = `${host}dhs/`;
 
 const axiosConfig = {
