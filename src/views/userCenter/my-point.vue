@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2021-12-30 00:11:13
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-06 22:58:47
+ * @LastEditTime: 2022-01-09 21:04:37
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/views/userCenter/my-point.vue
  * @Description:
 -->
@@ -72,6 +72,8 @@ export default {
                     this.tipText = '已经到底了喔';
                     this.finished = true;
                 }
+            }).catch(() => {
+                this.finished = true;
             }).finally(() => {
                 this.loading = false;
                 this.refreshing = false;
@@ -100,7 +102,6 @@ export default {
       font-size: .14rem;
       font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
-      background: #fff;
       color: #333333;
         .content-item {
             .describe-box {
@@ -125,9 +126,9 @@ export default {
                 }
             }
         }
-        .van-list__loading {
-          display: none;
-        }
+        // .van-list__loading {
+        //   display: none;
+        // }
     }
 }
 </style>

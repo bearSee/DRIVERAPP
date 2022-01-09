@@ -133,10 +133,11 @@
             </van-tag>
             <img
               class="goods-img"
-              v-if="goods.filePath"
-              :src="goods.filePath"
+              v-if="goods.productPic"
+              :src="$host.slice(0, $host.length - 1) + goods.productPic"
               alt="暂无图片">
             <van-empty
+              v-else
               image="error"
               description="暂无图片" />
           </div>
@@ -277,6 +278,8 @@ export default {
                     this.tipText = '已经到底了喔';
                     this.finished = true;
                 }
+            }).catch(() => {
+                this.finished = true;
             }).finally(() => {
                 this.loading = false;
                 this.refreshing = false;
@@ -334,7 +337,7 @@ export default {
             window.localStorage.setItem('historyTag', JSON.stringify(this.historyTag));
         },
         handlerRecommend() {
-            this.searchParams.recommendFlag = this.searchParams.recommendFlag === 'Y' ? 'N' : 'Y';
+            this.searchParams.recommendFlag = this.searchParams.recommendFlag === 'Y' ? '' : 'Y';
             this.handlerRefresh();
         },
         handlerExchange(goodsInfo) {
@@ -590,9 +593,9 @@ export default {
             }
           }
       }
-      .van-list__loading {
-        display: none;
-      }
+      // .van-list__loading {
+      //   display: none;
+      // }
   }
 }
 </style>

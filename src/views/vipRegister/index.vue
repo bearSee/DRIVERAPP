@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2022-01-05 21:38:50
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-08 23:08:07
+ * @LastEditTime: 2022-01-09 18:06:18
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/views/vipRegister/index.vue
  * @Description:
 -->
@@ -103,7 +103,7 @@
         clearable
         required
         v-model="params.vehicleNo"
-        :maxlength="8"
+        :maxlength="6"
         :rules="rules.vehicleNo" />
       <van-field
         size="large"
@@ -222,9 +222,9 @@ export default {
             // });
         },
         handlerSubmit() {
-            const { vehicleNo } = this.params;
-            if (vehicleNo && !vehicleNo.includes('粤B')) this.params.vehicleNo = `粤B${vehicleNo}`;
-            this.$http.post('/init/register', this.$qs.stringify(this.params)).then(async () => {
+            let { vehicleNo } = this.params;
+            if (vehicleNo && !vehicleNo.includes('粤B')) vehicleNo = `粤B${vehicleNo}`;
+            this.$http.post('/init/register', this.$qs.stringify({ ...this.params, vehicleNo })).then(async () => {
                 this.$toast.success('注册成功');
                 await this.handlerLogin(this.params.mobile);
                 setTimeout(() => {

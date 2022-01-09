@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2021-12-30 00:11:13
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-07 01:57:54
+ * @LastEditTime: 2022-01-09 21:45:24
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/views/userCenter/my-order.vue
  * @Description:
 -->
@@ -15,7 +15,7 @@
       @refresh="handlerRefresh">
       <div class="head-total-box">
         订单总消耗积分：
-        <span class="total-points">{{ totalPoints }}</span>
+        <span class="total-points">{{ sumPrice }}</span>
         <span class="point-mark" />
       </div>
       <van-list
@@ -38,7 +38,7 @@
           <div
             class="goods-box"
             @click="handlerViewDetail(order)">
-            <img :src="order.productPic">
+            <img :src="$host.slice(0, $host.length - 1) + order.productPic">
             <div class="name cut_font_3">
               {{ order.productName }}
             </div>
@@ -59,7 +59,7 @@
                 size="mini"
                 plain
                 round
-                :disabled="order.orderStatus === 'ORDER_STATUS_CANCELED'"
+                :disabled="order.orderStatus !== 'ORDER_STATUS_NEW'"
                 @click="handlerChangeStatus(order, 'ORDER_STATUS_CANCELED')">
                 取消交易
               </van-button>
@@ -68,7 +68,7 @@
                 size="mini"
                 plain
                 round
-                :disabled="order.orderStatus === 'ORDER_STATUS_FINISH'"
+                :disabled="order.orderStatus !== 'ORDER_STATUS_WAIT_CONFIRM'"
                 @click="handlerChangeStatus(order, 'ORDER_STATUS_FINISH')">
                 确认交易
               </van-button>
@@ -92,7 +92,7 @@ export default {
             orderData: [],
             limit: 20,
             page: 1,
-            totalPoints: 0,
+            sumPrice: 0,
             tipText: '',
         };
     },
@@ -105,10 +105,13 @@ export default {
                 const { totalCount = 0, list = [] } = (res.data || {}).page || {};
                 this.orderData.splice(this.orderData.length, 0, ...list);
                 this.page += 1;
+                this.sumPrice = (res.data || {}).sumPrice || 0;
                 if (this.orderData.length >= totalCount) {
                     this.tipText = '已经到底了喔';
                     this.finished = true;
                 }
+            }).catch(() => {
+                this.finished = true;
             }).finally(() => {
                 this.loading = false;
                 this.refreshing = false;
@@ -209,6 +212,8 @@ export default {
                   color: #F66A4A;
                   margin-bottom: .05rem;
                   span {
+                    display: inline-block;
+                    width: .24rem;
                     font-size: .12rem;
                     font-family: PingFangSC-Regular, PingFang SC;
                   }
@@ -232,9 +237,9 @@ export default {
               }
             }
         }
-        .van-list__loading {
-          display: none;
-        }
+        // .van-list__loading {
+        //   display: none;
+        // }
     }
 }
 </style>

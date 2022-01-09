@@ -77,46 +77,52 @@
         <div class="recommend-title">
           推荐商品
         </div>
-        <div
-          class="recommend-item"
-          v-for="goods in recommendData"
-          :key="goods.id">
-          <div class="image-box">
-            <van-tag
-              mark
-              type="danger"
-              v-if="goods.recommendFlag === 'Y'">
-              推荐
-            </van-tag>
-            <img
-              class="goods-img"
-              v-if="goods.filePath"
-              :src="goods.filePath"
-              alt="暂无图片">
-            <van-empty
-              image="error"
-              description="暂无图片" />
-          </div>
-          <div class="content-box">
-            <div class="g-title cut_font_3">
-              {{ goods.productName }}
+        <template v-if="recommendData.length">
+          <div
+            class="recommend-item"
+            v-for="goods in recommendData"
+            :key="goods.id">
+            <div class="image-box">
+              <van-tag
+                mark
+                type="danger"
+                v-if="goods.recommendFlag === 'Y'">
+                推荐
+              </van-tag>
+              <img
+                class="goods-img"
+                v-if="goods.productPic"
+                :src="$host.slice(0, $host.length - 1) + goods.productPic"
+                alt="暂无图片">
+              <van-empty
+                v-else
+                image="error"
+                description="暂无图片" />
             </div>
-            <div class="price-box">
-              <div class="price">
-                <span class="pri-num">{{ goods.price }} </span>
-                <span>积分/可兑换 {{ goods.exchangeNum }} 次</span>
+            <div class="content-box">
+              <div class="g-title cut_font_3">
+                {{ goods.productName }}
               </div>
-              <van-button
-                round
-                class="exchange"
-                size="mini"
-                type="primary"
-                @click="getGoodsDetail(goods)">
-                去看看
-              </van-button>
+              <div class="price-box">
+                <div class="price">
+                  <span class="pri-num">{{ goods.price }} </span>
+                  <span>积分/可兑换 {{ goods.exchangeNum }} 次</span>
+                </div>
+                <van-button
+                  round
+                  class="exchange"
+                  size="mini"
+                  type="primary"
+                  @click="getGoodsDetail(goods)">
+                  去看看
+                </van-button>
+              </div>
             </div>
           </div>
-        </div>
+        </template>
+        <van-empty
+          v-else
+          description="暂无推荐商品" />
       </div>
     </div>
     <div class="detail-foot">
@@ -188,11 +194,16 @@ export default {
             this.getGoodsImages();
             this.setCurrentGoodsInfo(info);
             this.swipeIndex = 0;
-            this.$el.scrollTop = 0;
+            if (this.$el) this.$el.scrollTop = 0;
         },
         getRecommendData() {
-            this.$http.post('/product/info/queryPage', this.$qs.stringify({ id: this.goodsInfo.id, page: 1, limit: 10 }), { loading: true }).then((res) => {
-                // const data = ((res.data || {}).page || {});
+            this.$http.post('/product/info/queryPage', this.$qs.stringify({
+                recommendFlag: 'Y',
+                idNe: this.goodsInfo.id,
+                productCategoryId: this.goodsInfo.productCategoryId,
+                page: 1,
+                limit: 10,
+            }), { loading: true }).then((res) => {
                 this.recommendData = ((res.data || {}).page || {}).list || [];
             });
         },
@@ -289,7 +300,7 @@ export default {
           }
         }
         .time-out-status {
-          width: 1.3rem;
+          width: 1.5rem;
           height: .05rem;
           margin-top: .04rem;
           background: #EEEEEE;

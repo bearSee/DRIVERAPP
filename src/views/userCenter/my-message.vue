@@ -2,8 +2,8 @@
  * @Author: 熊望
  * @Date: 2021-12-30 00:11:13
  * @LastEditors: 熊望
- * @LastEditTime: 2021-12-31 00:46:19
- * @FilePath: /nginx/Users/bear/Desktop/DRIVERAPP/src/views/userCenter/my-message.vue
+ * @LastEditTime: 2022-01-09 21:06:33
+ * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/views/userCenter/my-message.vue
  * @Description:
 -->
 
@@ -21,9 +21,10 @@
         <div class="list-container">
           <div
             class="content-item"
-            :class="i + 1 === messageData.length && 'no-shadow'"
             v-for="(message, i) in messageData"
-            :key="message.id">
+            :class="i + 1 === messageData.length && 'no-shadow'"
+            :key="message.id"
+            @click="handlerRead(message)">
             <div class="content-box">
               <div class="title-box">
                 <h3 class="cut_font_2">
@@ -74,6 +75,8 @@ export default {
                     this.tipText = '已经到底了喔';
                     this.finished = true;
                 }
+            }).catch(() => {
+                this.finished = true;
             }).finally(() => {
                 this.loading = false;
                 this.refreshing = false;
@@ -87,6 +90,17 @@ export default {
             this.limit = 20;
             this.page = 1;
             this.getMessageData();
+        },
+        async handlerRead(message) {
+            if (message.readStatus === 'N') {
+                await this.$http.post('/message/read', this.$qs.stringify({ messageDetailId: message.id }));
+                this.$set(message, 'readStatus', 'Y');
+            }
+            this.$dialog.alert({
+                title: message.title,
+                message: (message.content || '暂无内容'),
+                theme: 'round-button',
+            });
         },
     },
 };
@@ -142,9 +156,9 @@ export default {
             }
         }
       }
-      .van-list__loading {
-        display: none;
-      }
+      // .van-list__loading {
+      //   display: none;
+      // }
     }
 }
 </style>

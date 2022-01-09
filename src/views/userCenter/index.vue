@@ -47,20 +47,20 @@
         <div class="total-point-box">
           <div class="point-detail">
             <div class="point-num">
-              {{ userInfo.pointNum || 0 }}
+              {{ userInfo.todayScore || 0 }}
             </div>
             <div class="point-des">
               <span>今日共获得</span>
               <span class="mark">|</span>
               <span>已连续签到</span>
-              <span class="sign-days">{{ userInfo.signDays || 0 }}</span>
+              <span class="sign-days">{{ userInfo.continueDays || 0 }}</span>
               <span>天</span>
             </div>
           </div>
           <van-button
             type="primary"
-            :disabled="userInfo.hasSign"
-            @click="handlerSign">
+            :disabled="isSigned"
+            @click="sign">
             签到领积分
           </van-button>
         </div>
@@ -112,9 +112,9 @@
               size="mini"
               plain
               round
-              :disabled="String(active.status) === '1'"
+              :disabled="active.disabled || (active.disabledCallback && active.disabledCallback())"
               @click="handlerClick(active.code)">
-              {{ String(active.status) === '1' ? '已完成' : active.btnName }}
+              {{ active.disabled || (active.disabledCallback && active.disabledCallback()) ? '已完成' : active.btnName }}
             </van-button>
           </div>
         </div>
@@ -124,7 +124,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapMutations, mapActions } from 'vuex';
 
 export default {
     name: 'UserCenterIndex',
@@ -162,7 +162,6 @@ export default {
                     icon: 'share-o',
                     image: 'share.png',
                     pointNum: 0,
-                    status: 2,
                 },
                 {
                     name: '点赞',
@@ -172,7 +171,6 @@ export default {
                     icon: 'good-job-o',
                     image: 'thumbs-up.png',
                     pointNum: 0,
-                    status: 2,
                 },
                 {
                     name: '评论',
@@ -182,7 +180,6 @@ export default {
                     icon: 'comment-o',
                     image: 'comment.png',
                     pointNum: 0,
-                    status: 2,
                 },
                 {
                     name: '签到',
@@ -192,17 +189,17 @@ export default {
                     icon: 'sign',
                     image: 'sign.png',
                     pointNum: 0,
-                    status: 1,
+                    disabledCallback: () => this.isSigned,
                 },
                 {
                     name: '首次登陆',
-                    btnName: '去登陆',
+                    btnName: '已完成',
                     code: 'login',
                     describe: '首次登陆成功，轻松获得积分！',
                     icon: 'certificate',
                     image: 'login.png',
                     pointNum: 0,
-                    status: 1,
+                    disabled: true,
                 },
                 {
                     name: '首次兑换',
@@ -212,28 +209,38 @@ export default {
                     icon: 'exchange',
                     image: 'exchange.png',
                     pointNum: 0,
-                    status: 2,
+                    disabledCallback: () => this.userInfo.isFirstExchange === 'Y',
                 },
             ],
+            actionDesc: [],
         };
     },
     computed: {
         ...mapState(['userInfo']),
+        isSigned() {
+            return this.userInfo.lastSignDate === window.formatDate(new Date());
+        },
     },
     methods: {
         ...mapActions(['getUserInfo']),
-        // getActionData() {},
-        handlerSign() {
-            this.$dialog.alert({
-                title: '温馨提示',
-                message: '签到: 正在联调中',
-                theme: 'round-button',
+        ...mapMutations(['setUserInfo']),
+        getActionDesc() {
+            this.$http.post('/activity/list').then((res) => {
+                this.actionDesc = res && res.data && res.data.data || [];
             });
         },
         handlerQuestion(code) {
+            const activeCodes = {
+                sign: ['ACTIVITY_SIGN'],
+                share: ['ACTIVITY_INVITATION'],
+                active: ['ACTIVITY_SHARE', 'ACTIVITY_LIKES', 'ACTIVITY_COMMENT', 'ACTIVITY_FIRST_EXCHANGE', 'ACTIVITY_FIRST_LOGIN'],
+            };
+            const describes = activeCodes[code].map(type => this.actionDesc.find(({ activityType }) => activityType === type)).filter(d => d);
+
             this.$dialog.alert({
                 title: '温馨提示',
-                message: `${code}: 这是个提示，内容需求还没给`,
+                messageAlign: 'left',
+                message: `${describes.map(({ activityName, activityDesc }) => `\n${activityName}：${activityDesc || '暂无活动说明'}`).join('\n')}`,
                 theme: 'round-button',
             });
         },
@@ -248,12 +255,27 @@ export default {
                 });
             }
         },
+        sign() {
+            this.$http.post('/activity/sign').then(() => {
+                this.setUserInfo({ lastSignDate: window.formatDate(new Date()) });
+                this.$dialog.alert({
+                    title: '温馨提示',
+                    message: '签到成功',
+                    theme: 'round-button',
+                });
+            });
+        },
+        // 跳转到动态风采页
+        skip() {
+
+        },
         exchange() {
             this.$router.push('/point-exchange');
         },
     },
     created() {
         this.getUserInfo();
+        this.getActionDesc();
     },
     filters: {
         formatMoney: window.formatMoney,

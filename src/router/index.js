@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2022-01-07 22:59:31
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-08 22:28:24
+ * @LastEditTime: 2022-01-09 20:58:57
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/router/index.js
  * @Description:
  */
@@ -20,9 +20,10 @@ const mobile = query.mobile;
 
 router.beforeEach(async (to, from, next) => {
     document.body.scrollTop = 0;
-    if (!store.state.logined) {
+    if (!store.state.logined && !to.path.includes('vip-register')) {
         if (!mobile) {
-            if (!to.path.includes('vip-register')) {
+            const verificationToken = await store.dispatch('getUserInfo');
+            if (!verificationToken) {
                 next('/vip-register');
                 return;
             }

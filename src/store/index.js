@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2022-01-07 22:59:31
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-08 22:44:35
+ * @LastEditTime: 2022-01-09 20:58:12
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/store/index.js
  * @Description:
  */
@@ -16,7 +16,7 @@ const debug = process.env.NODE_ENV !== 'production';
 const store = new Vuex.Store({
     state: {
         // 需要缓存的数据
-        keepAliveKeys: ['userInfo', 'currentGoodsInfo', 'logined'],
+        keepAliveKeys: ['userInfo', 'currentGoodsInfo'],
         logined: false,
         // 用户信息
         userInfo: {},
@@ -45,16 +45,22 @@ const store = new Vuex.Store({
     },
     actions: {
         handlerLogin({ commit }, mobile) {
-            Vue.prototype.$http.post('/init/login', Vue.prototype.$qs.stringify({ mobile }), { loading: true, loadingText: '加载中...' }).then((res) => {
-                window.localStorage.setItem('Authorization', (res && res.data || {}).Authorization);
-                commit('setLoginStatus', true);
+            return new Promise((resolve) => {
+                Vue.prototype.$http.post('/init/login', Vue.prototype.$qs.stringify({ mobile }), { loading: true, loadingText: '加载中...' }).then((res) => {
+                    window.localStorage.setItem('Authorization', (res && res.data || {}).Authorization);
+                    commit('setLoginStatus', true);
+                }).finally(resolve);
             });
         },
         getUserInfo({ commit }) {
             return new Promise((resolve) => {
-                Vue.prototype.$http.post('/user/info', {}, { loading: true, loadingText: '加载中...' }).then((res) => {
+                Vue.prototype.$http.post('/user/info', null, { loading: true, loadingText: '加载中...' }).then((res) => {
                     commit('replaceUserInfo', (res && res.data || {}).data || {});
-                }).finally(resolve);
+                    commit('setLoginStatus', true);
+                    resolve(true);
+                }).catch(() => {
+                    resolve(false);
+                });
             });
         },
     },

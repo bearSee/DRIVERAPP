@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2022-01-07 22:59:31
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-09 16:12:24
+ * @LastEditTime: 2022-01-09 21:10:26
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/plugins/axios.js
  * @Description:
  */
@@ -12,8 +12,8 @@ import qs from 'qs';
 import store from '@/store';
 import errorCode from '@/utils/error-code';
 
-// const host = 'http://47.107.151.192:28091';
-const host = `${window.location.origin}${window.location.pathname}`;
+const host = 'http://47.107.151.192:28091/';
+// const host = `${window.location.origin}${window.location.pathname}`;
 const baseURL = `${host}dhs/`;
 
 const axiosConfig = {
@@ -27,7 +27,7 @@ Axios.interceptors.request.use(
     (config) => {
         config.headers = {
             ...config.headers,
-            Authorization: window.localStorage.getItem('Authorization'),
+            Authorization: window.localStorage.getItem('Authorization') || '',
         };
         // get请求增加时间戳，避免服务器304
         if (config.method === 'get') {
