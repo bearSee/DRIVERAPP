@@ -218,6 +218,10 @@ export default {
             this.pickerVisible = false;
         },
         handlerSendCode() {
+            if (!this.params.mobile) {
+                this.$toast('请填写手机号码');
+                return;
+            }
             this.$http.post('/', { mobile: this.params.mobile }).then(() => {
                 this.$toast.success('发送成功');
                 this.verificationTimeout = 60;

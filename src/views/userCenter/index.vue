@@ -274,7 +274,7 @@ export default {
              */
             const { id, type } = params || {};
             wx.miniProgram.navigateTo({
-                url: `/subs/website/pages/web-view/web-view?id=${id}&cardId=802536648603697152&type=${type}`,
+                url: `/pages/tabbar/dynamic/dynamic?id=${id}&cardId=802536648603697152&type=${type}`,
             });
         },
         exchange() {
