@@ -11,7 +11,7 @@
         :key="image.id">
         <van-image
           fit="cover"
-          :src="$host + image.filePath" />
+          :src="image.filePath" />
       </van-swipe-item>
       <template #indicator>
         <div class="custom-indicator">
@@ -92,7 +92,7 @@
               <img
                 class="goods-img"
                 v-if="goods.productPic"
-                :src="$host.slice(0, $host.length - 1) + goods.productPic"
+                :src="goods.productPic"
                 alt="暂无图片">
               <van-empty
                 v-else

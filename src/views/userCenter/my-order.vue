@@ -38,7 +38,7 @@
           <div
             class="goods-box"
             @click="handlerViewDetail(order)">
-            <img :src="$host.slice(0, $host.length - 1) + order.productPic">
+            <img :src="order.productPic">
             <div class="name cut_font_3">
               {{ order.productName }}
             </div>
