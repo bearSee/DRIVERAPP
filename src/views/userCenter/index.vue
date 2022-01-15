@@ -245,8 +245,8 @@ export default {
                 theme: 'round-button',
             });
         },
-        handlerClick(code, params) {
-            if (this[code]) this[code](params);
+        handlerClick(code) {
+            if (this[code]) this[code]();
         },
         sign() {
             this.$http.post('/activity/sign').then(() => {
@@ -267,14 +267,13 @@ export default {
             });
         },
         // 跳转到动态风采页
-        skip(params) {
+        skip() {
             /** id: 动态id
              * cardId: 华强北cardId:802536648603697152
              * type: 动态类型
              */
-            const { id, type } = params || {};
             wx.miniProgram.navigateTo({
-                url: `/pages/tabbar/dynamic/dynamic?id=${id}&cardId=802536648603697152&type=${type}`,
+                url: '/pages/tabbar/dynamic/dynamic?cardId=802536648603697152',
             });
         },
         exchange() {
