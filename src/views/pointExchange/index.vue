@@ -134,7 +134,7 @@
             <img
               class="goods-img"
               v-if="goods.productPic"
-              :src="$host.slice(0, $host.length - 1) + goods.productPic"
+              :src="goods.productPic"
               alt="暂无图片">
             <van-empty
               v-else

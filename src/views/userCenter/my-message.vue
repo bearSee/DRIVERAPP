@@ -36,7 +36,7 @@
               </div>
             </div>
             <div class="date-box">
-              <span>{{ message.createdDt }}</span>
+              <span>{{ message.sendDt }}</span>
               <div
                 class="status"
                 :class="'status_' + message.readStatus">

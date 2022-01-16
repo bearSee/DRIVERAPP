@@ -12,18 +12,35 @@
       left-arrow
       fixed
       placeholder
+      v-show="!isMiniprogram"
       :title="$route.name || ''"
       :class="`${$route.path.slice(1)}-head`"
       @click-left="$router.go(-1)"
     />
-    <router-view class="app-container" />
+    <router-view
+      class="app-container"
+      :class="isMiniprogram && 'is-miniprogram'" />
   </div>
 </template>
 
 <script>
+import wx from 'weixin-js-sdk';
 
 export default {
     name: 'App',
+    data() {
+        return {
+            isMiniprogram: false,
+        };
+    },
+    created() {
+        if (navigator.userAgent.toLowerCase().match(/MicroMessenger/i) === 'micromessenger') {
+            // ios的ua中无miniProgram，但都有MicroMessenger（表示是微信浏览器）
+            wx.miniProgram.getEnv((res) => {
+                this.isMiniprogram = !!res.miniprogram;
+            });
+        }
+    },
 };
 </script>
 <style lang="scss">
@@ -116,6 +133,9 @@ a {
             }
         }
       }
+  }
+  &.is-miniprogram {
+    height: 100%;
   }
 }
 </style>

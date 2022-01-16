@@ -10,6 +10,13 @@
 
 <template>
   <div class="vip-register-index">
+    <div class="register-head">
+      <img
+        class="logo"
+        src="@/assets/image/logo.jpg"
+        alt=""
+        srcset="">
+    </div>
     <van-form
       :show-error="false"
       @submit="handlerSubmit">
@@ -48,7 +55,7 @@
         :rules="rules.mobile"
         @click.native.stop="mobileKeyboardVisible = true"
       />
-      <van-field
+      <!-- <van-field
         size="large"
         label="短信验证码"
         name="verificationCode"
@@ -70,7 +77,7 @@
             发送验证码{{ verificationTimeout ? `(${verificationTimeout}s)` : '' }}
           </van-button>
         </template>
-      </van-field>
+      </van-field> -->
       <van-field
         size="large"
         label="身份证号"
@@ -211,15 +218,18 @@ export default {
             this.pickerVisible = false;
         },
         handlerSendCode() {
-            // this.$http.post('/', { mobile: this.params.mobile }).then(() => {
-            // this.$toast.success('发送成功');
-            this.$toast.success('验证码没联调随便填');
-            this.verificationTimeout = 60;
-            timer = setInterval(() => {
-                this.verificationTimeout -= 1;
-                if (!this.verificationTimeout) clearInterval(timer);
-            }, 1000);
-            // });
+            if (!this.params.mobile) {
+                this.$toast('请填写手机号码');
+                return;
+            }
+            this.$http.post('/', { mobile: this.params.mobile }).then(() => {
+                this.$toast.success('发送成功');
+                this.verificationTimeout = 60;
+                timer = setInterval(() => {
+                    this.verificationTimeout -= 1;
+                    if (!this.verificationTimeout) clearInterval(timer);
+                }, 1000);
+            });
         },
         handlerSubmit() {
             let { vehicleNo } = this.params;
@@ -241,6 +251,8 @@ export default {
     },
     created() {
         this.getUserTypes();
+        const { invitationCode } = this.$route.query;
+        if (invitationCode) this.params = { ...this.params, invitationCode };
     },
 };
 </script>
@@ -252,6 +264,16 @@ export default {
   position: relative;
   padding-bottom: .8rem;
   overflow-y: auto;
+  .register-head {
+    width: 100%;
+    padding: .1rem;
+    background: #fff;
+    .logo {
+      width: 100%;
+      padding-right: .1rem;
+      max-width: 100%;
+    }
+  }
   .verification-btn {
     width: 1.1rem;
     background: $theme;

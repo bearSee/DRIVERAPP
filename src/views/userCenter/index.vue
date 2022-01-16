@@ -124,6 +124,7 @@
 </template>
 
 <script>
+import wx from 'weixin-js-sdk';
 import { mapState, mapMutations, mapActions } from 'vuex';
 
 export default {
@@ -175,7 +176,7 @@ export default {
                 {
                     name: '评论',
                     btnName: '去评论',
-                    code: 'comment',
+                    code: 'skip',
                     describe: '升级为精华评论，任务奖励收入囊中!',
                     icon: 'comment-o',
                     image: 'comment.png',
@@ -245,15 +246,7 @@ export default {
             });
         },
         handlerClick(code) {
-            if (this[code]) {
-                this[code]();
-            } else {
-                this.$dialog.alert({
-                    title: '温馨提示',
-                    message: `${code}: 正在联调中`,
-                    theme: 'round-button',
-                });
-            }
+            if (this[code]) this[code]();
         },
         sign() {
             this.$http.post('/activity/sign').then(() => {
@@ -265,9 +258,23 @@ export default {
                 });
             });
         },
+        share() {
+            /* cardId: 华强北cardId:802536648603697152
+             * invitationCode: 分享码
+             */
+            wx.miniProgram.navigateTo({
+                url: `/subs/huaqiangnorth/pages/index/index?type=regiest&cardId=802536648603697152&invitationCode=${this.userInfo.invitationCode}`,
+            });
+        },
         // 跳转到动态风采页
         skip() {
-
+            /** id: 动态id
+             * cardId: 华强北cardId:802536648603697152
+             * type: 动态类型
+             */
+            wx.miniProgram.navigateTo({
+                url: '/pages/tabbar/dynamic/dynamic?cardId=802536648603697152',
+            });
         },
         exchange() {
             this.$router.push('/point-exchange');
