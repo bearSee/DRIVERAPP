@@ -1,7 +1,7 @@
 /*
  * @Author: 熊望
  * @Date: 2022-01-07 22:59:31
- * @LastEditors:  * @LastEditTime: 2022-01-16 19:52:16
+ * @LastEditors: 熊望
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/plugins/axios.js
  * @Description:
  */
@@ -12,12 +12,12 @@ import store from '@/store';
 import errorCode from '@/utils/error-code';
 import router from '../router';
 
-const host = `${window.location.protocol}//szift.szft.net.cn/driver-home/`;
 // const host = 'http://szift.szft.net.cn/driver-home/';
 // const host = 'http://47.107.151.192:28091/';
+const host = `${window.location.protocol}//szift.szft.net.cn/driver-home/`;
+const baseURL = host;
 // const host = `${window.location.origin}${window.location.pathname}`;
 // const baseURL = `${host}dhs/`;
-const baseURL = host;
 
 const axiosConfig = {
     baseURL,

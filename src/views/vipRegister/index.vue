@@ -260,6 +260,7 @@ export default {
         const { invitationCode = '' } = this.$route.query;
         const params = { invitationCode, mobile: String(this.userInfo.mobile || '').replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') };
         this.params = { ...this.params, ...params };
+        document.title = '会员注册';
     },
 };
 </script>

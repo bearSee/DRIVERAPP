@@ -256,6 +256,7 @@ export default {
                     message: '签到成功',
                     theme: 'round-button',
                 });
+                this.getUserInfo();
             });
         },
         share() {
@@ -263,7 +264,7 @@ export default {
              * invitationCode: 分享码
              */
             wx.miniProgram.navigateTo({
-                url: `/subs/huaqiangnorth/pages/index/index?type=regiest&cardId=802536648603697152&invitationCode=${this.userInfo.invitationCode}`,
+                url: `/subs/access/huaqiangnorth/pages/index/index?type=regiest&cardId=802536648603697152&invitationCode=${this.userInfo.invitationCode}`,
             });
         },
         // 跳转到动态风采页
@@ -272,11 +273,6 @@ export default {
              * cardId: 华强北cardId:802536648603697152
              * type: 动态类型
              */
-            console.log('wx.miniProgram:', wx.miniProgram);
-            console.log(`执行方法:
-            wx.miniProgram.reLaunch({
-                url: '/pages/tabbar/dynamic/dynamic?cardId=802536648603697152',
-            })`);
             wx.miniProgram.reLaunch({
                 url: '/pages/tabbar/dynamic/dynamic?cardId=802536648603697152',
             });

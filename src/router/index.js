@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2022-01-07 22:59:31
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-16 19:54:38
+ * @LastEditTime: 2022-01-18 00:46:34
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/router/index.js
  * @Description:
  */
@@ -32,6 +32,7 @@ router.beforeEach(async (to, from, next) => {
             }
 
             next();
+            document.title = to.name;
             return;
         }
         const loginSuc = await store.dispatch('handlerLogin', mobile);
@@ -41,6 +42,7 @@ router.beforeEach(async (to, from, next) => {
         }
     }
     next();
+    document.title = to.name;
 });
 
 export default router;
