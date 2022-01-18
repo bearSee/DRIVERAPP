@@ -199,7 +199,7 @@ export default {
     data() {
         return {
             searchParams: {
-                recommendFlag: 'Y',
+                recommendFlag: '',
                 productName: '',
                 productStatus: '',
                 productCategoryId: '',
