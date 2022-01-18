@@ -49,7 +49,10 @@ const store = new Vuex.Store({
                 Vue.prototype.$http.post('/init/login', Vue.prototype.$qs.stringify({ mobile }), { loading: true, loadingText: '加载中...' }).then((res) => {
                     window.localStorage.setItem('Authorization', (res && res.data || {}).Authorization);
                     commit('setLoginStatus', true);
-                }).finally(resolve);
+                    resolve(true);
+                }).catch(() => {
+                    resolve(false);
+                });
             });
         },
         getUserInfo({ commit }) {
@@ -57,6 +60,15 @@ const store = new Vuex.Store({
                 Vue.prototype.$http.post('/user/info', null, { loading: true, loadingText: '加载中...' }).then((res) => {
                     commit('replaceUserInfo', (res && res.data || {}).data || {});
                     commit('setLoginStatus', true);
+                    resolve(true);
+                }).catch(() => {
+                    resolve(false);
+                });
+            });
+        },
+        getLoginStatus() {
+            return new Promise((resolve) => {
+                Vue.prototype.$http.post('/activity/list', null, { loading: true, loadingText: '鉴定登录权限中...' }).then(() => {
                     resolve(true);
                 }).catch(() => {
                     resolve(false);

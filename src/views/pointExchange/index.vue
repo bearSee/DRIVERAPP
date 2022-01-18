@@ -123,7 +123,8 @@
         <div
           class="content-item"
           v-for="goods in goodsData"
-          :key="goods.id">
+          :key="goods.id"
+          @click="handlerExchange(goods)">
           <div class="image-box">
             <van-tag
               mark

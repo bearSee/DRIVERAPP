@@ -272,7 +272,12 @@ export default {
              * cardId: 华强北cardId:802536648603697152
              * type: 动态类型
              */
-            wx.miniProgram.navigateTo({
+            console.log('wx.miniProgram:', wx.miniProgram);
+            console.log(`执行方法:
+            wx.miniProgram.reLaunch({
+                url: '/pages/tabbar/dynamic/dynamic?cardId=802536648603697152',
+            })`);
+            wx.miniProgram.reLaunch({
                 url: '/pages/tabbar/dynamic/dynamic?cardId=802536648603697152',
             });
         },

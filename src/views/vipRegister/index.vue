@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2022-01-05 21:38:50
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-09 18:06:18
+ * @LastEditTime: 2022-01-16 19:57:18
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/views/vipRegister/index.vue
  * @Description:
 -->
@@ -158,7 +158,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 let timer;
 
@@ -210,6 +210,9 @@ export default {
             },
         };
     },
+    computed: {
+        ...mapState(['userInfo']),
+    },
     methods: {
         ...mapActions(['handlerLogin']),
         handlerChooseUserType(value, index) {
@@ -232,14 +235,17 @@ export default {
             });
         },
         handlerSubmit() {
-            let { vehicleNo } = this.params;
+            let { vehicleNo, mobile } = this.params;
             if (vehicleNo && !vehicleNo.includes('粤B')) vehicleNo = `粤B${vehicleNo}`;
-            this.$http.post('/init/register', this.$qs.stringify({ ...this.params, vehicleNo })).then(async () => {
+            if (mobile && mobile.includes('****')) mobile = this.userInfo.mobile || mobile || '';
+            this.$http.post('/init/register', this.$qs.stringify({ ...this.params, vehicleNo, mobile })).then(async () => {
                 this.$toast.success('注册成功');
-                await this.handlerLogin(this.params.mobile);
-                setTimeout(() => {
-                    this.$router.push('/user-center');
-                }, 100);
+                const loginSuc = await this.handlerLogin(mobile);
+                if (loginSuc) {
+                    setTimeout(() => {
+                        this.$router.push('/user-center');
+                    }, 100);
+                }
             });
         },
         getUserTypes() {
@@ -251,8 +257,9 @@ export default {
     },
     created() {
         this.getUserTypes();
-        const { invitationCode } = this.$route.query;
-        if (invitationCode) this.params = { ...this.params, invitationCode };
+        const { invitationCode = '' } = this.$route.query;
+        const params = { invitationCode, mobile: String(this.userInfo.mobile || '').replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') };
+        this.params = { ...this.params, ...params };
     },
 };
 </script>

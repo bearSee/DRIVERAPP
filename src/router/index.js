@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2022-01-07 22:59:31
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-09 20:58:57
+ * @LastEditTime: 2022-01-16 19:54:38
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/router/index.js
  * @Description:
  */
@@ -15,14 +15,17 @@ import routeConfig from './route-config';
 Vue.use(Router);
 const router = new Router(routeConfig);
 
-const query = qs.parse(window.location.href.split('?')[1] || '');
-const mobile = query.mobile;
-
 router.beforeEach(async (to, from, next) => {
     document.body.scrollTop = 0;
+    const query = qs.parse(window.location.href.split('?')[1] || '');
+    const mobile = query.mobile;
+    console.log('获取URL上的手机号---', mobile);
+    if (to.path.includes('vip-register') && mobile) {
+        store.commit('setUserInfo', { mobile });
+    }
     if (!store.state.logined && !to.path.includes('vip-register')) {
         if (!mobile) {
-            const verificationToken = await store.dispatch('getUserInfo');
+            const verificationToken = await store.dispatch('getLoginStatus');
             if (!verificationToken) {
                 next('/vip-register');
                 return;
@@ -31,7 +34,11 @@ router.beforeEach(async (to, from, next) => {
             next();
             return;
         }
-        await store.dispatch('handlerLogin', mobile);
+        const loginSuc = await store.dispatch('handlerLogin', mobile);
+        if (!loginSuc) {
+            next('/vip-register');
+            return;
+        }
     }
     next();
 });
