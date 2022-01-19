@@ -141,6 +141,9 @@ a {
   }
   &.is-miniprogram {
     height: 100%;
+    .van-list {
+        min-height: calc(100vh - .1rem);
+    }
   }
 }
 </style>

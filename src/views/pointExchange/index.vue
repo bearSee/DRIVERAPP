@@ -598,5 +598,13 @@ export default {
       //   display: none;
       // }
   }
+  &.is-miniprogram {
+    .van-overlay {
+      top: .54rem;
+    }
+    .history-popup {
+      top: .54rem;
+    }
+  }
 }
 </style>
