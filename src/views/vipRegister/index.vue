@@ -141,11 +141,18 @@
       />
     </van-popup>
     <van-number-keyboard
+      close-button-text="完成"
       v-model="params.mobile"
       :show="mobileKeyboardVisible"
       :maxlength="11"
       @blur="mobileKeyboardVisible = false"
-    />
+      @delete="handlerDeleteMobile">
+      <template #extra-key>
+        <span
+          style="font-size: .16rem;font-weight:600;"
+          @click="params.mobile = ''">清空</span>
+      </template>
+    </van-number-keyboard>
     <van-number-keyboard
       extra-key="X"
       close-button-text="完成"
@@ -178,7 +185,10 @@ export default {
                 ],
                 mobile: [
                     { required: true, message: '请输入手机号码' },
-                    { pattern: /^[1][3,4,5,6,7,8,9][0-9]{9}$|^\s*$/, message: '请输入正确的手机号码' },
+                    {
+                        validator: val => val && /^[1][3,4,5,6,7,8,9][0-9][0-9*]{4}[0-9]{4}$|^\s*$/.test(val),
+                        message: '请输入正确的手机号码',
+                    },
                 ],
                 verificationCode: [
                     { required: true, message: '请输入短信验证码' },
@@ -253,6 +263,13 @@ export default {
                 this.userTypes = ((res.data || {}).list || []);
                 this.pickerData = this.userTypes.map(({ dicValue }) => dicValue);
             });
+        },
+        handlerDeleteMobile() {
+            if (this.params.mobile.includes('****')) {
+                this.$nextTick(() => {
+                    this.params.mobile = '';
+                });
+            }
         },
     },
     created() {
