@@ -7,8 +7,9 @@
       :duration="1000"
       @change="swipeChange">
       <van-swipe-item
-        v-for="image in goodsImages"
-        :key="image.id">
+        v-for="(image, i) in goodsImages"
+        :key="image.id"
+        @click="handlerViewImage(i)">
         <van-image
           fit="cover"
           :src="image.filePath" />
@@ -28,6 +29,9 @@
           推荐
         </van-tag>
         <span>{{ goodsInfo.productName }}</span>
+      </div>
+      <div class="detail-desc">
+        <span>{{ goodsInfo.productDesc }}</span>
       </div>
       <div class="detail-time">
         <div class="price">
@@ -130,15 +134,17 @@
         block
         type="warning"
         @click="handlerBuy">
-        立即购买
+        立即兑换
       </van-button>
     </div>
   </div>
 </template>
 
 <script>
+import { ImagePreview } from 'vant';
 import { mapState, mapMutations } from 'vuex';
 
+console.log('ImagePreview', ImagePreview);
 export default {
     name: 'GoodsDetail',
     data() {
@@ -185,6 +191,12 @@ export default {
                 limit: 10,
             }), { loading: true }).then((res) => {
                 this.goodsImages = (res.data || {}).data || [];
+            });
+        },
+        handlerViewImage(index) {
+            ImagePreview({
+                images: this.goodsImages.map(({ filePath }) => filePath),
+                startPosition: index,
             });
         },
         getGoodsDetail(data) {
@@ -256,6 +268,12 @@ export default {
       font-weight: 500;
       color: #333333;
       line-height: .25rem;
+    }
+    .detail-desc {
+      font-size: .12rem;
+      color: #666;
+      line-height: .16rem;
+      margin-top: .07rem;
     }
     .detail-time {
       display: flex;

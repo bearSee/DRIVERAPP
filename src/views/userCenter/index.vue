@@ -177,7 +177,7 @@ export default {
                     name: '评论',
                     btnName: '去评论',
                     code: 'skip',
-                    describe: '升级为精华评论，任务奖励收入囊中!',
+                    describe: '评论任意活动，审核通过积分收入囊中!',
                     icon: 'comment-o',
                     image: 'comment.png',
                     pointNum: 0,
