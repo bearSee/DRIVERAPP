@@ -250,7 +250,7 @@ export default {
             if (mobile && mobile.includes('****')) mobile = this.userInfo.mobile || mobile || '';
             this.$http.post('/init/register', this.$qs.stringify({ ...this.params, vehicleNo, mobile })).then(async () => {
                 this.$toast.success('注册成功');
-                const loginSuc = await this.handlerLogin(mobile);
+                const loginSuc = await this.handlerLogin({ mobile });
                 if (loginSuc) {
                     setTimeout(() => {
                         this.$router.push('/user-center');

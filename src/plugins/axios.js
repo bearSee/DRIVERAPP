@@ -12,6 +12,8 @@ import store from '@/store';
 import errorCode from '@/utils/error-code';
 import router from '../router';
 
+let showMessageToast = true;
+
 // const host = 'http://szift.szft.net.cn/driver-home/';
 // const host = 'http://47.107.151.192:28091/';
 const host = `${window.location.protocol}//szift.szft.net.cn/driver-home/`;
@@ -46,6 +48,7 @@ Axios.interceptors.request.use(
                 message: config.loadingText || '页面加载中...',
             });
         }
+        showMessageToast = config.showToast !== false;
 
         return config;
     },
@@ -71,7 +74,7 @@ Axios.interceptors.response.use(
         // 返回成功响应
         if (String(code) === '0') return res;
 
-        showMessage();
+        if (showMessageToast) showMessage();
 
         // 登录失效拦截
         if (['10000'].includes(String(code))) {

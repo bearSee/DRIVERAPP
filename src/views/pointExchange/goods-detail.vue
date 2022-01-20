@@ -144,7 +144,6 @@
 import { ImagePreview } from 'vant';
 import { mapState, mapMutations } from 'vuex';
 
-console.log('ImagePreview', ImagePreview);
 export default {
     name: 'GoodsDetail',
     data() {

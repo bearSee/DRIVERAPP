@@ -44,9 +44,10 @@ const store = new Vuex.Store({
         },
     },
     actions: {
-        handlerLogin({ commit }, mobile) {
+        handlerLogin({ commit }, payload) {
+            const { mobile, showToast } = payload || {};
             return new Promise((resolve) => {
-                Vue.prototype.$http.post('/init/login', Vue.prototype.$qs.stringify({ mobile }), { loading: true, loadingText: '加载中...' }).then((res) => {
+                Vue.prototype.$http.post('/init/login', Vue.prototype.$qs.stringify({ mobile }), { loading: true, loadingText: '加载中...', showToast }).then((res) => {
                     window.localStorage.setItem('Authorization', (res && res.data || {}).Authorization);
                     commit('setLoginStatus', true);
                     resolve(true);
