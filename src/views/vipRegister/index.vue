@@ -97,7 +97,6 @@
         name="company"
         placeholder="请输入公司/平台"
         clearable
-        required
         v-model="params.company"
         :rules="rules.company"
       />
@@ -196,9 +195,9 @@ export default {
                 identityNo: [
                     { validator: val => window.isIdentityCode(val), message: '请输入正确的身份证号' },
                 ],
-                company: [
-                    { required: true, message: '请输入公司/平台' },
-                ],
+                // company: [
+                //     { required: true, message: '请输入公司/平台' },
+                // ],
                 vehicleNo: [
                     { required: true, message: '请输入车牌号' },
                     { pattern: /^[A-Z0-9]{5,6}$/, message: '请输入正确的车牌号' },

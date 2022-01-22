@@ -26,22 +26,27 @@ router.beforeEach(async (to, from, next) => {
             store.commit('setUserInfo', { mobile });
             const loginStatus = await store.dispatch('handlerLogin', { mobile, showToast: false });
             if (loginStatus) {
-                let action = 'cancel';
-                try {
-                    action = await Vue.prototype.$dialog.confirm({
-                        title: '温馨提示',
-                        message: `当前手机号 ${mobile} 已被注册`,
-                        confirmButtonText: '直接登陆',
-                        cancelButtonText: '前往注册',
-                        theme: 'round-button',
-                    });
-                } catch (error) {
-                    console.error(error);
-                }
-                if (action === 'confirm') {
-                    next('/user-center');
-                    return;
-                }
+                // let action = 'cancel';
+                // try {
+                //     action = await Vue.prototype.$dialog.confirm({
+                //         title: '温馨提示',
+                //         message: `当前手机号 ${mobile} 已被注册`,
+                //         confirmButtonText: '直接登陆',
+                //         cancelButtonText: '前往注册',
+                //         theme: 'round-button',
+                //     });
+                // } catch (error) {
+                //     console.error(error);
+                // }
+                // if (action === 'confirm') {
+                //     next('/user-center');
+                //     return;
+                // }
+                Vue.prototype.$dialog.alert({
+                    title: '温馨提示',
+                    message: `当前手机号 ${(mobile || '').replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')} 已被注册`,
+                    theme: 'round-button',
+                });
             }
         }
         next();
