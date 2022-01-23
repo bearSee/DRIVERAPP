@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2022-01-05 21:38:50
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-09 18:06:18
+ * @LastEditTime: 2022-01-16 19:57:18
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/views/vipRegister/index.vue
  * @Description:
 -->
@@ -97,7 +97,6 @@
         name="company"
         placeholder="请输入公司/平台"
         clearable
-        required
         v-model="params.company"
         :rules="rules.company"
       />
@@ -141,11 +140,18 @@
       />
     </van-popup>
     <van-number-keyboard
+      close-button-text="完成"
       v-model="params.mobile"
       :show="mobileKeyboardVisible"
       :maxlength="11"
       @blur="mobileKeyboardVisible = false"
-    />
+      @delete="handlerDeleteMobile">
+      <template #extra-key>
+        <span
+          style="font-size: .16rem;font-weight:600;"
+          @click="params.mobile = ''">清空</span>
+      </template>
+    </van-number-keyboard>
     <van-number-keyboard
       extra-key="X"
       close-button-text="完成"
@@ -158,7 +164,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 let timer;
 
@@ -178,7 +184,10 @@ export default {
                 ],
                 mobile: [
                     { required: true, message: '请输入手机号码' },
-                    { pattern: /^[1][3,4,5,6,7,8,9][0-9]{9}$|^\s*$/, message: '请输入正确的手机号码' },
+                    {
+                        validator: val => val && /^[1][3,4,5,6,7,8,9][0-9][0-9*]{4}[0-9]{4}$|^\s*$/.test(val),
+                        message: '请输入正确的手机号码',
+                    },
                 ],
                 verificationCode: [
                     { required: true, message: '请输入短信验证码' },
@@ -186,9 +195,9 @@ export default {
                 identityNo: [
                     { validator: val => window.isIdentityCode(val), message: '请输入正确的身份证号' },
                 ],
-                company: [
-                    { required: true, message: '请输入公司/平台' },
-                ],
+                // company: [
+                //     { required: true, message: '请输入公司/平台' },
+                // ],
                 vehicleNo: [
                     { required: true, message: '请输入车牌号' },
                     { pattern: /^[A-Z0-9]{5,6}$/, message: '请输入正确的车牌号' },
@@ -209,6 +218,9 @@ export default {
                 invitationCode: '',
             },
         };
+    },
+    computed: {
+        ...mapState(['userInfo']),
     },
     methods: {
         ...mapActions(['handlerLogin']),
@@ -232,14 +244,17 @@ export default {
             });
         },
         handlerSubmit() {
-            let { vehicleNo } = this.params;
+            let { vehicleNo, mobile } = this.params;
             if (vehicleNo && !vehicleNo.includes('粤B')) vehicleNo = `粤B${vehicleNo}`;
-            this.$http.post('/init/register', this.$qs.stringify({ ...this.params, vehicleNo })).then(async () => {
+            if (mobile && mobile.includes('****')) mobile = this.userInfo.mobile || mobile || '';
+            this.$http.post('/init/register', this.$qs.stringify({ ...this.params, vehicleNo, mobile })).then(async () => {
                 this.$toast.success('注册成功');
-                await this.handlerLogin(this.params.mobile);
-                setTimeout(() => {
-                    this.$router.push('/user-center');
-                }, 100);
+                const loginSuc = await this.handlerLogin({ mobile });
+                if (loginSuc) {
+                    setTimeout(() => {
+                        this.$router.push('/user-center');
+                    }, 100);
+                }
             });
         },
         getUserTypes() {
@@ -248,11 +263,20 @@ export default {
                 this.pickerData = this.userTypes.map(({ dicValue }) => dicValue);
             });
         },
+        handlerDeleteMobile() {
+            if (this.params.mobile.includes('****')) {
+                this.$nextTick(() => {
+                    this.params.mobile = '';
+                });
+            }
+        },
     },
     created() {
         this.getUserTypes();
-        const { invitationCode } = this.$route.query;
-        if (invitationCode) this.params = { ...this.params, invitationCode };
+        const { invitationCode = '' } = this.$route.query;
+        const params = { invitationCode, mobile: String(this.userInfo.mobile || '').replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') };
+        this.params = { ...this.params, ...params };
+        document.title = '会员注册';
     },
 };
 </script>

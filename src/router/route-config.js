@@ -31,7 +31,7 @@ export default {
         },
         {
             path: '/point-exchange',
-            name: '积分商城',
+            name: '积分兑换',
             meta: {
                 keepAlive: false,
             },
@@ -47,7 +47,7 @@ export default {
         },
         {
             path: '/user-center',
-            name: '个人中心',
+            name: '我的积分',
             meta: {
                 keepAlive: false,
             },

@@ -2,7 +2,7 @@
  * @Author: 熊望
  * @Date: 2021-12-28 20:10:42
  * @LastEditors: 熊望
- * @LastEditTime: 2022-01-05 23:42:40
+ * @LastEditTime: 2022-01-18 00:45:26
  * @FilePath: /nginx/Users/bear/projects/project-bear/DRIVERAPP/src/App.vue
  * @Description:
 -->
@@ -34,11 +34,16 @@ export default {
         };
     },
     created() {
-        if (navigator.userAgent.toLowerCase().match(/MicroMessenger/i) === 'micromessenger') {
-            // ios的ua中无miniProgram，但都有MicroMessenger（表示是微信浏览器）
-            wx.miniProgram.getEnv((res) => {
-                this.isMiniprogram = !!res.miniprogram;
-            });
+        try {
+            const userAgent = (navigator.userAgent.toLowerCase().match(/MicroMessenger/i) || '');
+            if (userAgent.includes('micromessenger') || userAgent === 'micromessenger') {
+                // ios的ua中无miniProgram，但都有MicroMessenger（表示是微信浏览器）
+                wx.miniProgram.getEnv((res) => {
+                    this.isMiniprogram = !!res.miniprogram;
+                });
+            }
+        } catch (error) {
+            console.error(error);
         }
     },
 };
@@ -136,6 +141,9 @@ a {
   }
   &.is-miniprogram {
     height: 100%;
+    .van-list {
+        min-height: calc(100vh - .1rem);
+    }
   }
 }
 </style>

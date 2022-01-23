@@ -177,7 +177,7 @@ export default {
                     name: '评论',
                     btnName: '去评论',
                     code: 'skip',
-                    describe: '升级为精华评论，任务奖励收入囊中!',
+                    describe: '评论任意活动，审核通过积分收入囊中!',
                     icon: 'comment-o',
                     image: 'comment.png',
                     pointNum: 0,
@@ -256,6 +256,7 @@ export default {
                     message: '签到成功',
                     theme: 'round-button',
                 });
+                this.getUserInfo();
             });
         },
         share() {
@@ -263,7 +264,7 @@ export default {
              * invitationCode: 分享码
              */
             wx.miniProgram.navigateTo({
-                url: `/subs/huaqiangnorth/pages/index/index?type=regiest&cardId=802536648603697152&invitationCode=${this.userInfo.invitationCode}`,
+                url: `/subs/access/huaqiangnorth/pages/index/index?type=regiest&cardId=802536648603697152&invitationCode=${this.userInfo.invitationCode}`,
             });
         },
         // 跳转到动态风采页
@@ -272,7 +273,7 @@ export default {
              * cardId: 华强北cardId:802536648603697152
              * type: 动态类型
              */
-            wx.miniProgram.navigateTo({
+            wx.miniProgram.reLaunch({
                 url: '/pages/tabbar/dynamic/dynamic?cardId=802536648603697152',
             });
         },

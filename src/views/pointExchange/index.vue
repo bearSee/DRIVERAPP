@@ -123,7 +123,8 @@
         <div
           class="content-item"
           v-for="goods in goodsData"
-          :key="goods.id">
+          :key="goods.id"
+          @click="handlerExchange(goods)">
           <div class="image-box">
             <van-tag
               mark
@@ -198,7 +199,7 @@ export default {
     data() {
         return {
             searchParams: {
-                recommendFlag: 'Y',
+                recommendFlag: '',
                 productName: '',
                 productStatus: '',
                 productCategoryId: '',
@@ -596,6 +597,14 @@ export default {
       // .van-list__loading {
       //   display: none;
       // }
+  }
+  &.is-miniprogram {
+    .van-overlay {
+      top: .54rem;
+    }
+    .history-popup {
+      top: .54rem;
+    }
   }
 }
 </style>
